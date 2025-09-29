@@ -22,14 +22,16 @@ function AppContent() {
   useTheme(); // Initialize theme
 
   return (
-    <div className="bg-background text-foreground min-h-screen w-full">
+    <div className="bg-background text-foreground w-[540px] h-[600px] flex flex-col overflow-hidden">
       <Header
         currentView={currentView}
         onViewChange={setCurrentView}
       />
-      <main className="px-4 pb-4 bg-background">
-        {currentView === 'scores' && <ScoresList />}
-        {currentView === 'standings' && <StandingsList />}
+      <main className="px-2 pt-2 pb-2 bg-background flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto scrollbar-thin">
+          {currentView === 'scores' && <ScoresList />}
+          {currentView === 'standings' && <StandingsList />}
+        </div>
       </main>
     </div>
   );

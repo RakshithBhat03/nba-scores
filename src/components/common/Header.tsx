@@ -1,5 +1,5 @@
 import { RefreshCw, Trophy, Calendar } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useIsFetching } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ThemeToggle from '../settings/ThemeToggle';
@@ -11,6 +11,7 @@ interface HeaderProps {
 
 export default function Header({ currentView, onViewChange }: HeaderProps) {
   const queryClient = useQueryClient();
+  const isFetching = useIsFetching();
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ['scores'] });
@@ -26,12 +27,13 @@ export default function Header({ currentView, onViewChange }: HeaderProps) {
         <div className="flex items-center gap-2">
           <Button
             onClick={handleRefresh}
+            disabled={isFetching > 0}
             variant="ghost"
             size="icon"
             className="text-white hover:bg-white/10"
             title="Refresh all data"
           >
-            <RefreshCw size={16} />
+            <RefreshCw size={16} className={isFetching > 0 ? 'animate-spin' : ''} />
           </Button>
           <ThemeToggle />
         </div>
