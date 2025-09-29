@@ -14,7 +14,7 @@ const cardVariants = cva(
         final: "border-muted bg-muted/30",
       },
       size: {
-        default: "p-6",
+        default: "p-3",
         sm: "p-3",
         lg: "p-8",
         game: "p-4",
@@ -48,7 +48,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    className={cn("flex flex-col space-y-1.5 p-3", className)}
     {...props}
   />
 ))
@@ -85,7 +85,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-3 pt-0", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
@@ -95,7 +95,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
+    className={cn("flex items-center p-3 pt-0", className)}
     {...props}
   />
 ))

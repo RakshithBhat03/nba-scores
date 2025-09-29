@@ -3,9 +3,8 @@ import { useScores } from '../../hooks/useScores';
 import GameCard from './GameCard';
 import DateCarousel from './DateCarousel';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { RefreshCw, AlertCircle, Calendar } from 'lucide-react';
+import { RefreshCw, AlertCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
@@ -42,7 +41,7 @@ export default function ScoresList() {
     queryClient.invalidateQueries({ queryKey: ['scores', dateString] });
   };
 
-  if (isLoading) {
+  if (isLoading || (isFetching && !games)) {
     return (
       <div className="space-y-4">
         <DateCarousel
@@ -83,39 +82,15 @@ export default function ScoresList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 w-full">
       <DateCarousel
         selectedDate={selectedDate}
         onDateChange={setSelectedDate}
       />
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-semibold text-foreground">
-            {format(selectedDate, 'EEEE, MMMM d')} Games
-          </h3>
-          {games && games.length > 0 && (
-            <Badge variant="secondary" className="ml-2">
-              {games.length}
-            </Badge>
-          )}
-        </div>
-        <Button
-          onClick={handleRefresh}
-          disabled={isFetching}
-          variant="ghost"
-          size="icon"
-          className="transition-all duration-200"
-          title="Refresh scores"
-        >
-          <RefreshCw size={16} className={isFetching ? 'animate-spin' : ''} />
-        </Button>
-      </div>
-
-      <div className="max-h-96 overflow-y-auto scrollbar-thin">
+      <div className="w-full">
         {games && games.length > 0 ? (
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3 w-full">
             {games.map((game) => (
               <GameCard
                 key={game.id}
@@ -140,12 +115,6 @@ export default function ScoresList() {
         )}
       </div>
 
-      {isFetching && !isLoading && (
-        <div className="flex items-center justify-center py-2 text-muted-foreground">
-          <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-          <span className="text-sm">Updating scores...</span>
-        </div>
-      )}
     </div>
   );
 }
