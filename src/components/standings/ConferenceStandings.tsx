@@ -10,18 +10,13 @@ export default function ConferenceStandings({ conference }: ConferenceStandingsP
   if (!conference.standings || conference.standings.length === 0) {
     return (
       <Card className="overflow-hidden">
-        <div className="bg-muted/50 px-4 py-3 border-b border-border">
-          <h3 className="font-semibold text-foreground">
-            {conference.name}
-          </h3>
-        </div>
         <div className="p-8 text-center">
           <div className="text-4xl mb-4">🏀</div>
           <h3 className="text-lg font-semibold text-foreground mb-2">
             No standings available
           </h3>
           <p className="text-muted-foreground">
-            {conference.name} standings are currently unavailable
+            Standings are currently unavailable
           </p>
         </div>
       </Card>
@@ -29,18 +24,9 @@ export default function ConferenceStandings({ conference }: ConferenceStandingsP
   }
 
   return (
-    <Card className="overflow-hidden">
-      <div className="bg-muted/50 px-4 py-3 border-b border-border">
-        <h3 className="font-semibold text-foreground flex items-center">
-          {conference.name}
-          <span className="ml-2 text-sm text-muted-foreground font-normal">
-            ({conference.standings.length} teams)
-          </span>
-        </h3>
-      </div>
-
+    <Card className="overflow-hidden w-full">
       {/* Table Header */}
-      <div className="bg-muted/30 px-4 py-2 border-b border-border">
+      <div className="bg-muted/30 px-2 py-2 border-b border-border">
         <div className="flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide">
           <div className="flex items-center space-x-3 flex-1">
             <span className="w-6 text-center">#</span>

@@ -30,7 +30,7 @@ export default function TeamStandingRow({ teamStanding, rank }: TeamStandingRowP
 
   return (
     <div className={cn(
-      "flex items-center justify-between p-3 hover:bg-accent/20 transition-colors duration-200 group",
+      "flex items-center justify-between px-2 py-2 hover:bg-accent/20 transition-colors duration-200 group",
       isPlayoffPosition && "bg-green-50/50 dark:bg-green-950/20",
       isPlayInPosition && "bg-yellow-50/50 dark:bg-yellow-950/20"
     )}>
@@ -45,8 +45,8 @@ export default function TeamStandingRow({ teamStanding, rank }: TeamStandingRowP
         </div>
 
         {/* Team Logo & Name */}
-        <div className="flex items-center space-x-3 min-w-0">
-          <Avatar className="h-8 w-8 border border-border flex-shrink-0">
+        <div className="flex items-center space-x-2 min-w-0">
+          <Avatar className="h-7 w-7 border border-border flex-shrink-0">
             <AvatarImage
               src={team.logo}
               alt={team.name}

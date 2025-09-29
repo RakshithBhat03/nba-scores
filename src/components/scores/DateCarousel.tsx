@@ -1,7 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, addDays, subDays, isToday, isSameDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 interface DateCarouselProps {
@@ -61,11 +60,6 @@ export default function DateCarousel({ selectedDate, onDateChange }: DateCarouse
               <span className={cn("text-xs leading-tight mt-0.5", isSelected && "font-bold")}>
                 {format(date, 'MMM d')}
               </span>
-              {isCurrentDay && (
-                <Badge className="mt-0.5 px-1 py-0 text-[10px] bg-nba-primary-500 text-white leading-none h-3">
-                  Today
-                </Badge>
-              )}
             </Button>
           );
         })}
