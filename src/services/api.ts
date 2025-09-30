@@ -1,3 +1,7 @@
+import { logger } from '../utils/logger';
+import { ScoreboardResponseSchema, StandingsResponseSchema } from '../schemas/api';
+import { z } from 'zod';
+
 const ESPN_BASE_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
 
 // Mock data for development/fallback
@@ -98,14 +102,26 @@ export const espnApi = {
       });
 
       if (!response.ok) {
-        console.warn('ESPN API request failed, using mock data');
+        logger.warn('ESPN API request failed, using mock data');
         return mockScoreboardData;
       }
 
       const data = await response.json();
-      return data;
+
+      // Validate response data
+      try {
+        const validatedData = ScoreboardResponseSchema.parse(data);
+        return validatedData;
+      } catch (validationError) {
+        logger.error('API response validation failed:', validationError);
+        if (validationError instanceof z.ZodError) {
+          logger.error('Validation errors:', validationError.issues);
+        }
+        // Return original data if validation fails to avoid breaking the app
+        return data;
+      }
     } catch (error) {
-      console.warn('ESPN API error, falling back to mock data:', error);
+      logger.warn('ESPN API error, falling back to mock data:', error);
       return mockScoreboardData;
     }
   },
@@ -118,7 +134,7 @@ export const espnApi = {
       }
       return response.json();
     } catch (error) {
-      console.error('Failed to fetch teams:', error);
+      logger.error('Failed to fetch teams:', error);
       throw error;
     }
   },
@@ -129,9 +145,22 @@ export const espnApi = {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return response.json();
+      const data = await response.json();
+
+      // Validate response data
+      try {
+        const validatedData = StandingsResponseSchema.parse(data);
+        return validatedData;
+      } catch (validationError) {
+        logger.error('Standings validation failed:', validationError);
+        if (validationError instanceof z.ZodError) {
+          logger.error('Validation errors:', validationError.issues);
+        }
+        // Return original data if validation fails
+        return data;
+      }
     } catch (error) {
-      console.error('Failed to fetch standings:', error);
+      logger.error('Failed to fetch standings:', error);
       throw error;
     }
   },
@@ -144,7 +173,7 @@ export const espnApi = {
       }
       return response.json();
     } catch (error) {
-      console.error('Failed to fetch box score:', error);
+      logger.error('Failed to fetch box score:', error);
       throw error;
     }
   }
