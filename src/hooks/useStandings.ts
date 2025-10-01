@@ -4,8 +4,7 @@ import nbaTeamsData from '../data/nbaTeams.json';
 
 async function fetchConferenceStandings(groupId: number): Promise<any[]> {
   try {
-    const coreApiUrl = import.meta.env.VITE_CORE_API_BASE_URL || '';
-    const standingsResponse = await fetch(`${coreApiUrl}/seasons/2025/types/2/groups/${groupId}/standings/0?lang=en&region=us`);
+    const standingsResponse = await fetch(`http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2025/types/2/groups/${groupId}/standings/0?lang=en&region=us`);
     if (!standingsResponse.ok) {
       throw new Error(`Failed to fetch standings for group ${groupId}`);
     }
@@ -97,7 +96,7 @@ async function fetchConferenceStandings(groupId: number): Promise<any[]> {
   }
 }
 
-async function fetchStandingsFromApi(): Promise<any[]> {
+async function fetchStandingsFromESPN(): Promise<any[]> {
   try {
     // Fetch both Eastern (group 5) and Western (group 6) conference standings
     const [easternStandings, westernStandings] = await Promise.all([
@@ -108,14 +107,14 @@ async function fetchStandingsFromApi(): Promise<any[]> {
     // Combine both conferences
     return [...easternStandings, ...westernStandings];
   } catch (error) {
-    console.warn('Failed to fetch standings from API:', error);
+    console.warn('Failed to fetch standings from ESPN API:', error);
     return [];
   }
 }
 
 async function fetchStandings(): Promise<Standings> {
   try {
-    const allTeams = await fetchStandingsFromApi();
+    const allTeams = await fetchStandingsFromESPN();
 
     if (allTeams.length === 0) {
       throw new Error('No teams fetched');
@@ -189,7 +188,7 @@ async function fetchStandings(): Promise<Standings> {
 
     return standings;
   } catch (error) {
-    console.warn('Failed to fetch standings from API, using empty fallback:', error);
+    console.warn('Failed to fetch standings from ESPN API, using empty fallback:', error);
     // Return empty standings as fallback
     return {
       season: { year: 2025, type: 2 },

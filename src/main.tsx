@@ -2,17 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
-import { logger } from './utils/logger';
 
-logger.log('NBA Scores Extension starting...');
+console.log('NBA Scores Extension starting...');
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  logger.error('Root element not found!');
+  console.error('Root element not found!');
   throw new Error('Root element not found');
 }
 
-logger.log('Root element found, creating React root...');
+console.log('Root element found, creating React root...');
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
@@ -21,4 +20,4 @@ root.render(
   </React.StrictMode>
 );
 
-logger.log('React app rendered successfully!');
+console.log('React app rendered successfully!');
