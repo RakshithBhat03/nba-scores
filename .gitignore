@@ -50,6 +50,3 @@ coverage/
 # Temporary folders
 tmp/
 temp/
-
-# Claude documentation
-CLAUDE.md

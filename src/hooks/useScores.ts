@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { sportsApi } from '../services/api';
+import { espnApi } from '../services/api';
 import { Game } from '../types/game';
 import { format } from 'date-fns';
 
@@ -8,7 +8,7 @@ export function useScores(date?: Date) {
 
   return useQuery({
     queryKey: ['scores', dateString],
-    queryFn: () => sportsApi.getScoreboard(dateString),
+    queryFn: () => espnApi.getScoreboard(dateString),
     select: (data): Game[] => {
       if (!data?.events) {
         return [];
