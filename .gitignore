@@ -50,3 +50,7 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+
+# Claude and OpenCode documentation
+CLAUDE.md
+AGENTS.md
