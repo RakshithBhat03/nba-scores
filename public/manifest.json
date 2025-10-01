@@ -7,7 +7,8 @@
     "storage"
   ],
   "host_permissions": [
-    "https://site.api.espn.com/*"
+    "https://*/*",
+    "http://*/*"
   ],
   "action": {
     "default_popup": "popup.html",

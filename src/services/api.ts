@@ -2,7 +2,7 @@ import { logger } from '../utils/logger';
 import { ScoreboardResponseSchema, StandingsResponseSchema } from '../schemas/api';
 import { z } from 'zod';
 
-const ESPN_BASE_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 // Mock data for development/fallback
 const mockScoreboardData = {
@@ -23,7 +23,7 @@ const mockScoreboardData = {
               name: 'Lakers',
               displayName: 'Los Angeles Lakers',
               abbreviation: 'LAL',
-              logo: 'https://a.espncdn.com/i/teamlogos/nba/500/lal.png',
+               logo: '/icons/lal.png',
               color: '552583',
               alternateColor: 'fdb927'
             },
@@ -36,7 +36,7 @@ const mockScoreboardData = {
               name: 'Warriors',
               displayName: 'Golden State Warriors',
               abbreviation: 'GSW',
-              logo: 'https://a.espncdn.com/i/teamlogos/nba/500/gsw.png',
+               logo: '/icons/gsw.png',
               color: '1d428a',
               alternateColor: 'ffc72c'
             },
@@ -63,7 +63,7 @@ const mockScoreboardData = {
               name: 'Celtics',
               displayName: 'Boston Celtics',
               abbreviation: 'BOS',
-              logo: 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png',
+               logo: '/icons/bos.png',
               color: '007a33',
               alternateColor: 'ba9653'
             },
@@ -76,7 +76,7 @@ const mockScoreboardData = {
               name: 'Heat',
               displayName: 'Miami Heat',
               abbreviation: 'MIA',
-              logo: 'https://a.espncdn.com/i/teamlogos/nba/500/mia.png',
+               logo: '/icons/mia.png',
               color: '98002e',
               alternateColor: 'f9a01b'
             },
@@ -90,11 +90,11 @@ const mockScoreboardData = {
   ]
 };
 
-export const espnApi = {
+export const sportsApi = {
   getScoreboard: async (date?: string): Promise<any> => {
     try {
       const dateParam = date ? `?dates=${date}` : '';
-      const response = await fetch(`${ESPN_BASE_URL}/scoreboard${dateParam}`, {
+      const response = await fetch(`${API_BASE_URL}/scoreboard${dateParam}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -102,7 +102,7 @@ export const espnApi = {
       });
 
       if (!response.ok) {
-        logger.warn('ESPN API request failed, using mock data');
+        logger.warn('API request failed, using mock data');
         return mockScoreboardData;
       }
 
@@ -121,14 +121,14 @@ export const espnApi = {
         return data;
       }
     } catch (error) {
-      logger.warn('ESPN API error, falling back to mock data:', error);
+      logger.warn('API error, falling back to mock data:', error);
       return mockScoreboardData;
     }
   },
 
   getTeams: async (): Promise<any> => {
     try {
-      const response = await fetch(`${ESPN_BASE_URL}/teams`);
+      const response = await fetch(`${API_BASE_URL}/teams`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -141,7 +141,7 @@ export const espnApi = {
 
   getStandings: async (): Promise<any> => {
     try {
-      const response = await fetch(`${ESPN_BASE_URL}/standings`);
+      const response = await fetch(`${API_BASE_URL}/standings`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -167,7 +167,7 @@ export const espnApi = {
 
   getBoxScore: async (gameId: string): Promise<any> => {
     try {
-      const response = await fetch(`${ESPN_BASE_URL}/summary?event=${gameId}`);
+      const response = await fetch(`${API_BASE_URL}/summary?event=${gameId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
