@@ -1,8 +1,4 @@
-import { logger } from '../utils/logger';
-import { ScoreboardResponseSchema, StandingsResponseSchema } from '../schemas/api';
-import { z } from 'zod';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const ESPN_BASE_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
 
 // Mock data for development/fallback
 const mockScoreboardData = {
@@ -23,7 +19,7 @@ const mockScoreboardData = {
               name: 'Lakers',
               displayName: 'Los Angeles Lakers',
               abbreviation: 'LAL',
-               logo: '/icons/lal.png',
+              logo: 'https://a.espncdn.com/i/teamlogos/nba/500/lal.png',
               color: '552583',
               alternateColor: 'fdb927'
             },
@@ -36,7 +32,7 @@ const mockScoreboardData = {
               name: 'Warriors',
               displayName: 'Golden State Warriors',
               abbreviation: 'GSW',
-               logo: '/icons/gsw.png',
+              logo: 'https://a.espncdn.com/i/teamlogos/nba/500/gsw.png',
               color: '1d428a',
               alternateColor: 'ffc72c'
             },
@@ -63,7 +59,7 @@ const mockScoreboardData = {
               name: 'Celtics',
               displayName: 'Boston Celtics',
               abbreviation: 'BOS',
-               logo: '/icons/bos.png',
+              logo: 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png',
               color: '007a33',
               alternateColor: 'ba9653'
             },
@@ -76,7 +72,7 @@ const mockScoreboardData = {
               name: 'Heat',
               displayName: 'Miami Heat',
               abbreviation: 'MIA',
-               logo: '/icons/mia.png',
+              logo: 'https://a.espncdn.com/i/teamlogos/nba/500/mia.png',
               color: '98002e',
               alternateColor: 'f9a01b'
             },
@@ -90,11 +86,11 @@ const mockScoreboardData = {
   ]
 };
 
-export const sportsApi = {
+export const espnApi = {
   getScoreboard: async (date?: string): Promise<any> => {
     try {
       const dateParam = date ? `?dates=${date}` : '';
-      const response = await fetch(`${API_BASE_URL}/scoreboard${dateParam}`, {
+      const response = await fetch(`${ESPN_BASE_URL}/scoreboard${dateParam}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -102,78 +98,53 @@ export const sportsApi = {
       });
 
       if (!response.ok) {
-        logger.warn('API request failed, using mock data');
+        console.warn('ESPN API request failed, using mock data');
         return mockScoreboardData;
       }
 
       const data = await response.json();
-
-      // Validate response data
-      try {
-        const validatedData = ScoreboardResponseSchema.parse(data);
-        return validatedData;
-      } catch (validationError) {
-        logger.error('API response validation failed:', validationError);
-        if (validationError instanceof z.ZodError) {
-          logger.error('Validation errors:', validationError.issues);
-        }
-        // Return original data if validation fails to avoid breaking the app
-        return data;
-      }
+      return data;
     } catch (error) {
-      logger.warn('API error, falling back to mock data:', error);
+      console.warn('ESPN API error, falling back to mock data:', error);
       return mockScoreboardData;
     }
   },
 
   getTeams: async (): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/teams`);
+      const response = await fetch(`${ESPN_BASE_URL}/teams`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     } catch (error) {
-      logger.error('Failed to fetch teams:', error);
+      console.error('Failed to fetch teams:', error);
       throw error;
     }
   },
 
   getStandings: async (): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/standings`);
+      const response = await fetch(`${ESPN_BASE_URL}/standings`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
-
-      // Validate response data
-      try {
-        const validatedData = StandingsResponseSchema.parse(data);
-        return validatedData;
-      } catch (validationError) {
-        logger.error('Standings validation failed:', validationError);
-        if (validationError instanceof z.ZodError) {
-          logger.error('Validation errors:', validationError.issues);
-        }
-        // Return original data if validation fails
-        return data;
-      }
+      return response.json();
     } catch (error) {
-      logger.error('Failed to fetch standings:', error);
+      console.error('Failed to fetch standings:', error);
       throw error;
     }
   },
 
   getBoxScore: async (gameId: string): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/summary?event=${gameId}`);
+      const response = await fetch(`${ESPN_BASE_URL}/summary?event=${gameId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     } catch (error) {
-      logger.error('Failed to fetch box score:', error);
+      console.error('Failed to fetch box score:', error);
       throw error;
     }
   }
