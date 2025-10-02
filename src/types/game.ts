@@ -28,49 +28,86 @@ export interface Team {
 }
 
 export interface BoxScore {
-  gameId: string;
-  homeTeam: TeamStats;
-  awayTeam: TeamStats;
-  leaders?: GameLeaders;
+  header?: any;
+  boxscore: {
+    teams: BoxScoreTeam[];
+    players: BoxScorePlayer[];
+  };
+  leaders: BoxScoreLeader[];
+  gameInfo?: any;
 }
 
-export interface TeamStats {
+export interface BoxScoreTeam {
   team: Team;
-  score: number;
-  statistics: Statistic[];
-  players: Player[];
+  statistics: BoxScoreStatistic[];
+  score?: number;
+  homeAway: 'home' | 'away';
+  displayOrder: number;
 }
 
-export interface Player {
-  id: string;
-  displayName: string;
-  jersey: string;
-  position: string;
-  statistics: Statistic[];
+export interface BoxScorePlayer {
+  team: Team;
+  statistics: PlayerStats[];
 }
 
-export interface Statistic {
+export interface PlayerStats {
+  names: string[];
+  keys: string[];
+  labels: string[];
+  descriptions: string[];
+  athletes: PlayerAthlete[];
+}
+
+export interface PlayerAthlete {
+  active: boolean;
+  athlete: {
+    id: string;
+    displayName: string;
+    shortName: string;
+    headshot: { href: string };
+    jersey: string;
+    position: { abbreviation: string };
+  };
+  starter: boolean;
+  didNotPlay: boolean;
+  reason: string;
+  ejected: boolean;
+  stats: string[];
+}
+
+export interface BoxScoreStatistic {
   name: string;
+  displayValue: string;
   abbreviation: string;
-  displayValue: string;
-  value: number;
+  label: string;
 }
 
-export interface GameLeaders {
-  points: Leader;
-  rebounds: Leader;
-  assists: Leader;
+export interface BoxScoreLeader {
+  team: Team;
+  leaders: LeaderCategory[];
 }
 
-export interface Leader {
+export interface LeaderCategory {
+  name: string;
+  displayName: string;
+  leaders: LeaderEntry[];
+}
+
+export interface LeaderEntry {
   displayValue: string;
-  leaders: {
-    athlete: {
-      id: string;
-      displayName: string;
-      headshot: string;
-    };
-    team: Team;
+  athlete: {
+    id: string;
+    displayName: string;
+    headshot: { href: string };
+    jersey: string;
+    position: { abbreviation: string };
+  };
+  statistics: {
+    name: string;
+    displayName: string;
+    abbreviation: string;
+    value: number;
+    displayValue: string;
   }[];
 }
 

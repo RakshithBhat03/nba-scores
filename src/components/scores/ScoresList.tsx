@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useScores } from '../../hooks/useScores';
+import { useGamePreview } from '@/hooks/useGamePreview';
 import GameCard from './GameCard';
+import GamePreview from './GamePreview';
 import DateCarousel from './DateCarousel';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -33,12 +35,24 @@ function GameCardSkeleton() {
 
 export default function ScoresList() {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const { data: games, isLoading, error, isFetching } = useScores(selectedDate);
+  const { boxScore, isLoading: isPreviewLoading, openPreview, closePreview } = useGamePreview();
   const queryClient = useQueryClient();
 
   const handleRefresh = () => {
     const dateString = format(selectedDate, 'yyyyMMdd');
     queryClient.invalidateQueries({ queryKey: ['scores', dateString] });
+  };
+
+  const handleGameClick = (gameId: string) => {
+    setSelectedGameId(gameId);
+    openPreview(gameId);
+  };
+
+  const handleBackToScores = () => {
+    setSelectedGameId(null);
+    closePreview();
   };
 
   if (isLoading || (isFetching && !games)) {
@@ -89,18 +103,27 @@ export default function ScoresList() {
       />
 
       <div className="w-full">
-        {games && games.length > 0 ? (
-          <div className="grid grid-cols-3 gap-3 w-full">
-            {games.map((game) => (
-              <GameCard
-                key={game.id}
-                game={game}
-                onCardClick={() => {
-                  // TODO: Open box score modal
-                  console.log('Opening box score for game:', game.id);
-                }}
-              />
-            ))}
+        {selectedGameId ? (
+          <GamePreview
+            boxScore={boxScore}
+            isLoading={isPreviewLoading}
+            onClose={handleBackToScores}
+          />
+        ) : games && games.length > 0 ? (
+          <div className="w-full">
+            <div className="grid grid-cols-3 gap-3 w-full">
+              {games.map((game) => (
+                <GameCard
+                  key={game.id}
+                  game={game}
+                  onCardClick={() => {
+                    if (game.status === 'in') {
+                      handleGameClick(game.id);
+                    }
+                  }}
+                />
+              ))}
+            </div>
           </div>
         ) : (
           <div className="text-center py-12">
