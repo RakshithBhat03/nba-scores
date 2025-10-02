@@ -50,7 +50,7 @@ export default function GameCard({ game, onCardClick }: GameCardProps) {
   const getCardVariant = () => {
     switch (game.status) {
       case 'in':
-        return 'live';
+        return 'game';
       case 'final':
         return 'final';
       default:
