@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowLeft, X } from 'lucide-react';
-import { BoxScore } from '@/types/game';
+import { BoxScore, Team } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -56,7 +56,7 @@ const GamePreview: React.FC<GamePreviewProps> = ({ boxScore, isLoading, onClose 
       }, 0);
   };
 
-  const renderTeamCard = (team: any, isHome: boolean) => {
+  const renderTeamCard = (team: Team, isHome: boolean) => {
     const teamStats = teams.find(t => t.team.id === team.id);
     const playerStats = players.find(p => p.team.id === team.id);
     const score = getTeamScore(team.id);
