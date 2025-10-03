@@ -147,8 +147,8 @@ export interface StandingStat {
   type: string;
 }
 
-// ESPN API Response Types
-export interface ESPNEvent {
+// API Response Types
+export interface GameEvent {
   id: string;
   date: string;
   status: {
@@ -156,22 +156,22 @@ export interface ESPNEvent {
     period?: number;
     displayClock?: string;
   };
-  competitions: ESPNCompetition[];
+  competitions: GameCompetition[];
 }
 
-export interface ESPNCompetition {
-  competitors: ESPNCompetitor[];
+export interface GameCompetition {
+  competitors: GameCompetitor[];
   venue?: { fullName: string };
 }
 
-export interface ESPNCompetitor {
-  team: ESPTeam;
+export interface GameCompetitor {
+  team: GameTeam;
   score?: string;
   homeAway: 'home' | 'away';
   records?: Array<{ summary: string }>;
 }
 
-export interface ESPTeam {
+export interface GameTeam {
   id: string;
   name?: string;
   displayName: string;
@@ -181,11 +181,11 @@ export interface ESPTeam {
   alternateColor?: string;
 }
 
-export interface ESPNApiResponse {
-  events: ESPNEvent[];
+export interface ApiResponse {
+  events: GameEvent[];
 }
 
-export interface ESPNBoxScoreResponse {
+export interface BoxScoreResponse {
   header: unknown;
   boxscore: {
     teams: BoxScoreTeam[];
@@ -195,7 +195,7 @@ export interface ESPNBoxScoreResponse {
   gameInfo: unknown;
 }
 
-export interface ESPNStandingsResponse {
+export interface StandingsResponse {
   standings: Array<{
     team: { $ref: string };
     records: Array<{
@@ -208,7 +208,7 @@ export interface ESPNStandingsResponse {
   }>;
 }
 
-export interface ESPNTeamResponse {
+export interface TeamResponse {
   id: string;
   displayName: string;
   abbreviation?: string;

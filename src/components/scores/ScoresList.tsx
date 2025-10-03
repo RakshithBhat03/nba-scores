@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useScores } from '../../hooks/useScores';
 import { useGamePreview } from '@/hooks/useGamePreview';
 import { BoxScore } from '@/types/game';
@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { sportsApi } from '../../services/api';
+import { format, startOfDay, addDays } from 'date-fns';
 
 function GameCardSkeleton() {
   return (
@@ -41,9 +42,35 @@ export default function ScoresList() {
   const { boxScore, isLoading: isPreviewLoading, openPreview, closePreview } = useGamePreview();
   const queryClient = useQueryClient();
 
+  // Prefetch adjacent windows for smoother navigation
+  useEffect(() => {
+    const prefetchWindow = (date: Date) => {
+      const normalizedDate = startOfDay(date);
+      const windowStart = addDays(normalizedDate, -2);
+      const windowKey = format(windowStart, 'yyyyMMdd');
+      queryClient.prefetchQuery({
+        queryKey: ['scores', 'window', windowKey],
+        queryFn: async () => {
+          const startDate = format(windowStart, 'yyyyMMdd');
+          const endDate = format(addDays(windowStart, 4), 'yyyyMMdd');
+          const dateRange = `${startDate}-${endDate}`;
+          return await sportsApi.getScoreboard(dateRange);
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutes
+      });
+    };
+
+    // Prefetch previous and next windows
+    prefetchWindow(addDays(selectedDate, -5)); // Previous window
+    prefetchWindow(addDays(selectedDate, 5));  // Next window
+  }, [selectedDate, queryClient]);
+
   const handleRefresh = () => {
-    const dateString = format(selectedDate, 'yyyyMMdd');
-    queryClient.invalidateQueries({ queryKey: ['scores', dateString] });
+    // Calculate the window key for the current selected date
+    const normalizedDate = startOfDay(selectedDate);
+    const windowStart = addDays(normalizedDate, -2);
+    const windowKey = format(windowStart, 'yyyyMMdd');
+    queryClient.invalidateQueries({ queryKey: ['scores', 'window', windowKey] });
   };
 
   const handleGameClick = (gameId: string) => {
