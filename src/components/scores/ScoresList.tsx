@@ -74,8 +74,14 @@ export default function ScoresList() {
   };
 
   const handleGameClick = (gameId: string) => {
-    setSelectedGameId(gameId);
-    openPreview(gameId);
+    try {
+      setSelectedGameId(gameId);
+      openPreview(gameId);
+    } catch (error) {
+      console.error('Failed to open game preview:', error);
+      // Reset selected game ID on error
+      setSelectedGameId(null);
+    }
   };
 
   const handleBackToScores = () => {

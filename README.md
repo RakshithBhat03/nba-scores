@@ -107,7 +107,7 @@ src/
 ### Data Flow
 
 1. **Custom Hooks** handle data fetching via TanStack Query
-2. **API Service** provides external API integration with fallbacks
+2. **API Service** provides external API integration
 3. **Type-safe interfaces** define data structures
 4. **Chrome Storage** persists user settings
 
@@ -145,7 +145,7 @@ The extension uses external NBA APIs for live data:
 
 The API endpoints and data structures are based on the public ESPN API documentation available at https://github.com/pseudo-r/Public-ESPN-API.
 
-All API calls include graceful fallback to mock data to ensure the extension always works.
+
 
 ## Contributing
 
