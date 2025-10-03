@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { format } from "date-fns"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -7,11 +8,13 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatGameTime(date: string): string {
   try {
-    return new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    }).format(new Date(date))
+    // Display game times in user's local timezone
+    const gameDate = new Date(date);
+    const localTime = new Date(gameDate.toLocaleString("en-US", {
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    }));
+
+    return format(localTime, 'h:mm a');
   } catch {
     return 'TBD'
   }

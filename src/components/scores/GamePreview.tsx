@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowLeft, X } from 'lucide-react';
-import { BoxScore, Team } from '@/types/game';
+import { BoxScore, Team, BoxScoreStatistic } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +41,37 @@ const GamePreview: React.FC<GamePreviewProps> = ({ boxScore, isLoading, onClose 
   const { teams, players } = boxScore.boxscore;
   const leaders = boxScore.leaders || [];
 
+  // Map technical statistic names to user-friendly abbreviations
+  const getStatDisplayName = (stat: BoxScoreStatistic): string => {
+    const nameMap: Record<string, string> = {
+      'fieldGoalsMade-fieldGoalsAttempted': 'FG',
+      'fieldGoalPct': 'FG%',
+      'threePointFieldGoalsMade-threePointFieldGoalsAttempted': '3PT',
+      'threePointFieldGoalPct': '3P%',
+      'freeThrowsMade-freeThrowsAttempted': 'FT',
+      'freeThrowPct': 'FT%',
+      'totalRebounds': 'REB',
+      'offensiveRebounds': 'OR',
+      'defensiveRebounds': 'DR',
+      'assists': 'AST',
+      'steals': 'STL',
+      'blocks': 'BLK',
+      'turnovers': 'TO',
+      'personalFouls': 'PF',
+      'points': 'PTS',
+      'teamRebounds': 'TREB',
+      'teamTurnovers': 'TTO',
+      'fastBreakPoints': 'FBP',
+      'pointsInPaint': 'PIP',
+      'secondChancePoints': 'SCP',
+      'biggestLead': 'BL',
+      'efficiency': 'EFF',
+      'minutes': 'MIN'
+    };
+
+    return stat.abbreviation || nameMap[stat.name] || stat.name;
+  };
+
   const getTeamScore = (teamId: string) => {
     const playerStats = players.find(p => p.team.id === teamId);
     if (!playerStats || !playerStats.statistics[0]) return 0;
@@ -69,6 +100,7 @@ const GamePreview: React.FC<GamePreviewProps> = ({ boxScore, isLoading, onClose 
       );
     }
 
+    // Show all available team statistics
     const mainStats = teamStats.statistics.slice(0, 12);
     const playerData = playerStats.statistics[0];
 
@@ -99,8 +131,8 @@ const GamePreview: React.FC<GamePreviewProps> = ({ boxScore, isLoading, onClose 
             <div className="grid grid-cols-3 gap-3 text-xs">
               {mainStats.map((stat, index) => (
                 <div key={index} className="flex justify-between">
-                  <span className="text-gray-600">{stat.abbreviation}:</span>
-                  <span className="font-medium">{stat.displayValue}</span>
+                  <span className="text-gray-600">{getStatDisplayName(stat)}:</span>
+                  <span className="font-medium">{stat.displayValue || '-'}</span>
                 </div>
               ))}
             </div>

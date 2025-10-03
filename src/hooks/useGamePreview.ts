@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { espnApi } from '@/services/api';
+import { sportsApi } from '@/services/api';
 
 export const useGamePreview = () => {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
@@ -13,7 +13,7 @@ export const useGamePreview = () => {
     refetch
   } = useQuery({
     queryKey: ['boxScore', selectedGameId],
-    queryFn: () => selectedGameId ? espnApi.getBoxScore(selectedGameId) : null,
+    queryFn: () => selectedGameId ? sportsApi.getBoxScore(selectedGameId) : null,
     enabled: !!selectedGameId && isPreviewOpen,
     staleTime: 30000, // 30 seconds
   });
