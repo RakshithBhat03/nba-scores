@@ -28,13 +28,13 @@ export interface Team {
 }
 
 export interface BoxScore {
-  header?: any;
+  header?: unknown;
   boxscore: {
     teams: BoxScoreTeam[];
     players: BoxScorePlayer[];
   };
   leaders: BoxScoreLeader[];
-  gameInfo?: any;
+  gameInfo?: unknown;
 }
 
 export interface BoxScoreTeam {
@@ -145,4 +145,74 @@ export interface StandingStat {
   value: number;
   displayValue: string;
   type: string;
+}
+
+// ESPN API Response Types
+export interface ESPNEvent {
+  id: string;
+  date: string;
+  status: {
+    type: { name: string };
+    period?: number;
+    displayClock?: string;
+  };
+  competitions: ESPNCompetition[];
+}
+
+export interface ESPNCompetition {
+  competitors: ESPNCompetitor[];
+  venue?: { fullName: string };
+}
+
+export interface ESPNCompetitor {
+  team: ESPTeam;
+  score?: string;
+  homeAway: 'home' | 'away';
+  records?: Array<{ summary: string }>;
+}
+
+export interface ESPTeam {
+  id: string;
+  name?: string;
+  displayName: string;
+  abbreviation: string;
+  logo: string;
+  color?: string;
+  alternateColor?: string;
+}
+
+export interface ESPNApiResponse {
+  events: ESPNEvent[];
+}
+
+export interface ESPNBoxScoreResponse {
+  header: unknown;
+  boxscore: {
+    teams: BoxScoreTeam[];
+    players: BoxScorePlayer[];
+  };
+  leaders: BoxScoreLeader[];
+  gameInfo: unknown;
+}
+
+export interface ESPNStandingsResponse {
+  standings: Array<{
+    team: { $ref: string };
+    records: Array<{
+      stats: Array<{
+        name: string;
+        value: number;
+        displayValue: string;
+      }>;
+    }>;
+  }>;
+}
+
+export interface ESPNTeamResponse {
+  id: string;
+  displayName: string;
+  abbreviation?: string;
+  color?: string;
+  alternateColor?: string;
+  logos?: Array<{ href: string }>;
 }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useSettings } from './useSettings';
 
 export function useTheme() {
@@ -11,12 +11,12 @@ export function useTheme() {
     return 'light';
   };
 
-  const getEffectiveTheme = (): 'light' | 'dark' => {
+  const getEffectiveTheme = useCallback((): 'light' | 'dark' => {
     if (settings.theme === 'system') {
       return getSystemTheme();
     }
     return settings.theme === 'dark' ? 'dark' : 'light';
-  };
+  }, [settings.theme]);
 
   const toggleTheme = () => {
     const currentTheme = settings.theme;
@@ -54,7 +54,7 @@ export function useTheme() {
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
-  }, [settings.theme]);
+  }, [settings.theme, getEffectiveTheme]);
 
   return {
     theme: settings.theme,

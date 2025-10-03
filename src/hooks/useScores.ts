@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { espnApi } from '../services/api';
-import { Game } from '../types/game';
+import { Game, ESPNEvent, ESPNCompetitor } from '../types/game';
 import { format } from 'date-fns';
 
 export function useScores(date?: Date) {
@@ -14,15 +14,15 @@ export function useScores(date?: Date) {
         return [];
       }
 
-      return data.events.map((event: any): Game | null => {
+      return data.events.map((event: ESPNEvent): Game | null => {
         const competition = event.competitions?.[0];
         if (!competition) {
           return null;
         }
 
         // Find home and away teams (home is typically homeAway: 'home')
-        const homeTeam = competition.competitors.find((c: any) => c.homeAway === 'home') || competition.competitors[0];
-        const awayTeam = competition.competitors.find((c: any) => c.homeAway === 'away') || competition.competitors[1];
+        const homeTeam = competition.competitors.find((c: ESPNCompetitor) => c.homeAway === 'home') || competition.competitors[0];
+        const awayTeam = competition.competitors.find((c: ESPNCompetitor) => c.homeAway === 'away') || competition.competitors[1];
 
         // Map status names to our format
         const statusMap: Record<string, 'scheduled' | 'in' | 'final'> = {

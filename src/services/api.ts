@@ -1,5 +1,7 @@
 const ESPN_BASE_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
 
+import { ESPNApiResponse, ESPNBoxScoreResponse } from '../types/game';
+
 // Mock data for development/fallback
 const mockScoreboardData = {
   events: [
@@ -24,6 +26,7 @@ const mockScoreboardData = {
               alternateColor: 'fdb927'
             },
             score: '112',
+            homeAway: 'away' as const,
             records: [{ summary: '42-40' }]
           },
           {
@@ -37,6 +40,7 @@ const mockScoreboardData = {
               alternateColor: 'ffc72c'
             },
             score: '118',
+            homeAway: 'home' as const,
             records: [{ summary: '44-38' }]
           }
         ],
@@ -64,6 +68,7 @@ const mockScoreboardData = {
               alternateColor: 'ba9653'
             },
             score: '58',
+            homeAway: 'away' as const,
             records: [{ summary: '48-34' }]
           },
           {
@@ -77,6 +82,7 @@ const mockScoreboardData = {
               alternateColor: 'f9a01b'
             },
             score: '62',
+            homeAway: 'home' as const,
             records: [{ summary: '44-38' }]
           }
         ],
@@ -87,7 +93,7 @@ const mockScoreboardData = {
 };
 
 export const espnApi = {
-  getScoreboard: async (date?: string): Promise<any> => {
+  getScoreboard: async (date?: string): Promise<ESPNApiResponse> => {
     try {
       const dateParam = date ? `?dates=${date}` : '';
       const response = await fetch(`${ESPN_BASE_URL}/scoreboard${dateParam}`, {
@@ -110,7 +116,7 @@ export const espnApi = {
     }
   },
 
-  getTeams: async (): Promise<any> => {
+  getTeams: async (): Promise<unknown> => {
     try {
       const response = await fetch(`${ESPN_BASE_URL}/teams`);
       if (!response.ok) {
@@ -123,7 +129,7 @@ export const espnApi = {
     }
   },
 
-  getStandings: async (): Promise<any> => {
+  getStandings: async (): Promise<unknown> => {
     try {
       const response = await fetch(`${ESPN_BASE_URL}/standings`);
       if (!response.ok) {
@@ -136,7 +142,7 @@ export const espnApi = {
     }
   },
 
-  getBoxScore: async (gameId: string): Promise<any> => {
+  getBoxScore: async (gameId: string): Promise<ESPNBoxScoreResponse> => {
     try {
       const response = await fetch(`${ESPN_BASE_URL}/summary?event=${gameId}`);
       if (!response.ok) {
