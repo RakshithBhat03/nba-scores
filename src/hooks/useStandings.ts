@@ -2,7 +2,30 @@ import { useQuery } from '@tanstack/react-query';
 import type { Standings } from '../types/game';
 import nbaTeamsData from '../data/nbaTeams.json';
 
-async function fetchConferenceStandings(groupId: number): Promise<any[]> {
+interface TeamStandingWithStats {
+  team: {
+    id: string;
+    name: string;
+    displayName: string;
+    abbreviation: string;
+    logo: string;
+    color: string;
+    alternateColor: string;
+  };
+  conference: 'eastern' | 'western';
+  stats: Array<{
+    name: string;
+    displayName: string;
+    shortDisplayName: string;
+    description: string;
+    abbreviation: string;
+    value: number;
+    displayValue: string;
+    type: string;
+  }>;
+}
+
+async function fetchConferenceStandings(groupId: number): Promise<TeamStandingWithStats[]> {
   try {
     const standingsResponse = await fetch(`http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2025/types/2/groups/${groupId}/standings/0?lang=en&region=us`);
     if (!standingsResponse.ok) {
@@ -10,7 +33,7 @@ async function fetchConferenceStandings(groupId: number): Promise<any[]> {
     }
     const standingsData = await standingsResponse.json();
 
-    const teamStandings: any[] = [];
+    const teamStandings: TeamStandingWithStats[] = [];
 
     if (standingsData.standings) {
       for (const entry of standingsData.standings) {
@@ -37,7 +60,7 @@ async function fetchConferenceStandings(groupId: number): Promise<any[]> {
                 color: team.color || '000000',
                 alternateColor: team.alternateColor || 'FFFFFF'
               },
-              conference: teamInfo.conference,
+              conference: teamInfo.conference as 'eastern' | 'western',
               stats: [
                 {
                   name: 'wins',
@@ -45,8 +68,8 @@ async function fetchConferenceStandings(groupId: number): Promise<any[]> {
                   shortDisplayName: 'W',
                   description: 'Wins',
                   abbreviation: 'W',
-                  value: overallRecord.stats.find((s: any) => s.name === 'wins')?.value || 0,
-                  displayValue: overallRecord.stats.find((s: any) => s.name === 'wins')?.displayValue || '0',
+                  value: overallRecord.stats.find((s: { name: string; value: number; displayValue: string }) => s.name === 'wins')?.value || 0,
+                  displayValue: overallRecord.stats.find((s: { name: string; value: number; displayValue: string }) => s.name === 'wins')?.displayValue || '0',
                   type: 'total'
                 },
                 {
@@ -55,8 +78,8 @@ async function fetchConferenceStandings(groupId: number): Promise<any[]> {
                   shortDisplayName: 'L',
                   description: 'Losses',
                   abbreviation: 'L',
-                  value: overallRecord.stats.find((s: any) => s.name === 'losses')?.value || 0,
-                  displayValue: overallRecord.stats.find((s: any) => s.name === 'losses')?.displayValue || '0',
+                  value: overallRecord.stats.find((s: { name: string; value: number; displayValue: string }) => s.name === 'losses')?.value || 0,
+                  displayValue: overallRecord.stats.find((s: { name: string; value: number; displayValue: string }) => s.name === 'losses')?.displayValue || '0',
                   type: 'total'
                 },
                 {
@@ -65,8 +88,8 @@ async function fetchConferenceStandings(groupId: number): Promise<any[]> {
                   shortDisplayName: 'PCT',
                   description: 'Win Percentage',
                   abbreviation: 'PCT',
-                  value: overallRecord.stats.find((s: any) => s.name === 'winPercent')?.value || 0,
-                  displayValue: overallRecord.stats.find((s: any) => s.name === 'winPercent')?.displayValue || '.000',
+                  value: overallRecord.stats.find((s: { name: string; value: number; displayValue: string }) => s.name === 'winPercent')?.value || 0,
+                  displayValue: overallRecord.stats.find((s: { name: string; value: number; displayValue: string }) => s.name === 'winPercent')?.displayValue || '.000',
                   type: 'percentage'
                 },
                 {
@@ -75,8 +98,8 @@ async function fetchConferenceStandings(groupId: number): Promise<any[]> {
                   shortDisplayName: 'GB',
                   description: 'Games Behind',
                   abbreviation: 'GB',
-                  value: overallRecord.stats.find((s: any) => s.name === 'gamesBehind')?.value || 0,
-                  displayValue: overallRecord.stats.find((s: any) => s.name === 'gamesBehind')?.displayValue || '-',
+                  value: overallRecord.stats.find((s: { name: string; value: number; displayValue: string }) => s.name === 'gamesBehind')?.value || 0,
+                  displayValue: overallRecord.stats.find((s: { name: string; value: number; displayValue: string }) => s.name === 'gamesBehind')?.displayValue || '-',
                   type: 'total'
                 }
               ]
@@ -96,7 +119,7 @@ async function fetchConferenceStandings(groupId: number): Promise<any[]> {
   }
 }
 
-async function fetchStandingsFromESPN(): Promise<any[]> {
+async function fetchStandingsFromESPN(): Promise<TeamStandingWithStats[]> {
   try {
     // Fetch both Eastern (group 5) and Western (group 6) conference standings
     const [easternStandings, westernStandings] = await Promise.all([
@@ -125,28 +148,28 @@ async function fetchStandings(): Promise<Standings> {
     const westernTeams = allTeams.filter(team => team.conference === 'western');
 
     // Sort by win percentage (descending)
-    const sortTeams = (teams: any[]) => {
+    const sortTeams = (teams: TeamStandingWithStats[]) => {
       return teams.sort((a, b) => {
-        const aWinPct = a.stats.find((s: any) => s.name === 'winPercent')?.value || 0;
-        const bWinPct = b.stats.find((s: any) => s.name === 'winPercent')?.value || 0;
+        const aWinPct = a.stats.find((s) => s.name === 'winPercent')?.value || 0;
+        const bWinPct = b.stats.find((s) => s.name === 'winPercent')?.value || 0;
         return bWinPct - aWinPct;
       });
     };
 
     // Calculate games behind for each conference
-    const addGamesBehind = (teams: any[]) => {
+    const addGamesBehind = (teams: TeamStandingWithStats[]): TeamStandingWithStats[] => {
       if (teams.length === 0) return teams;
 
-      const topWins = teams[0].stats.find((s: any) => s.name === 'wins')?.value || 0;
-      const topLosses = teams[0].stats.find((s: any) => s.name === 'losses')?.value || 0;
+      const topWins = teams[0].stats.find((s) => s.name === 'wins')?.value || 0;
+      const topLosses = teams[0].stats.find((s) => s.name === 'losses')?.value || 0;
 
       return teams.map(team => {
-        const wins = team.stats.find((s: any) => s.name === 'wins')?.value || 0;
-        const losses = team.stats.find((s: any) => s.name === 'losses')?.value || 0;
+        const wins = team.stats.find((s) => s.name === 'wins')?.value || 0;
+        const losses = team.stats.find((s) => s.name === 'losses')?.value || 0;
         const gamesBehind = ((topWins - wins) + (losses - topLosses)) / 2;
 
         // Update games behind stat
-        const gbStat = team.stats.find((s: any) => s.name === 'gamesBehind');
+        const gbStat = team.stats.find((s) => s.name === 'gamesBehind');
         if (gbStat) {
           gbStat.value = gamesBehind;
           gbStat.displayValue = gamesBehind === 0 ? '-' : gamesBehind.toString();

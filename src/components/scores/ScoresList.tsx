@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useScores } from '../../hooks/useScores';
 import { useGamePreview } from '@/hooks/useGamePreview';
+import { BoxScore } from '@/types/game';
 import GameCard from './GameCard';
 import GamePreview from './GamePreview';
 import DateCarousel from './DateCarousel';
@@ -105,7 +106,7 @@ export default function ScoresList() {
       <div className="w-full">
         {selectedGameId ? (
           <GamePreview
-            boxScore={boxScore}
+            boxScore={boxScore as BoxScore | null}
             isLoading={isPreviewLoading}
             onClose={handleBackToScores}
           />
@@ -117,7 +118,7 @@ export default function ScoresList() {
                   key={game.id}
                   game={game}
                   onCardClick={() => {
-                    if (game.status === 'in') {
+                    if (game.status === 'in' || game.status === 'final') {
                       handleGameClick(game.id);
                     }
                   }}
