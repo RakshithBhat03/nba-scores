@@ -143,6 +143,8 @@ The extension uses external NBA APIs for live data:
 - **Standings API** - Conference standings
 - **Teams API** - Team information and logos
 
+The API endpoints and data structures are based on the public ESPN API documentation available at https://github.com/pseudo-r/Public-ESPN-API.
+
 All API calls include graceful fallback to mock data to ensure the extension always works.
 
 ## Contributing
