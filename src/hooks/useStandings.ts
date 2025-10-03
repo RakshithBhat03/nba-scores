@@ -28,7 +28,7 @@ interface TeamStandingWithStats {
 async function fetchConferenceStandings(groupId: number): Promise<TeamStandingWithStats[]> {
   try {
     const coreApiUrl = import.meta.env.VITE_CORE_API_BASE_URL;
-    const standingsResponse = await fetch(`${coreApiUrl}/v2/sports/basketball/leagues/nba/seasons/2025/types/2/groups/${groupId}/standings/0?lang=en&region=us`);
+    const standingsResponse = await fetch(`${coreApiUrl}/seasons/2025/types/2/groups/${groupId}/standings/0?lang=en&region=us`);
     if (!standingsResponse.ok) {
       throw new Error(`Failed to fetch standings for group ${groupId}`);
     }
@@ -173,7 +173,7 @@ async function fetchStandings(): Promise<Standings> {
         const gbStat = team.stats.find((s) => s.name === 'gamesBehind');
         if (gbStat) {
           gbStat.value = gamesBehind;
-          gbStat.displayValue = gamesBehind === 0 ? '-' : gamesBehind.toString();
+          gbStat.displayValue = gamesBehind === 0 ? '-' : gamesBehind % 1 === 0 ? gamesBehind.toString() : gamesBehind.toFixed(1);
         }
 
         return team;

@@ -113,6 +113,10 @@ const GamePreview: React.FC<GamePreviewProps> = ({ boxScore, isLoading, onClose 
               src={team.logo} 
               alt={team.displayName}
               className="w-10 h-10"
+              onError={(e) => {
+                e.currentTarget.src = '';
+                e.currentTarget.style.display = 'none';
+              }}
             />
             <div>
               <h3 className="font-semibold text-sm">{team.displayName}</h3>
@@ -219,11 +223,15 @@ const GamePreview: React.FC<GamePreviewProps> = ({ boxScore, isLoading, onClose 
           {leaders.map((teamLeader) => (
             <div key={teamLeader.team.id} className="space-y-3">
               <div className="flex items-center gap-2">
-                <img 
-                  src={teamLeader.team.logo} 
-                  alt={teamLeader.team.displayName}
-                  className="w-5 h-5"
-                />
+                 <img 
+                   src={teamLeader.team.logo} 
+                   alt={teamLeader.team.displayName}
+                   className="w-5 h-5"
+                   onError={(e) => {
+                     e.currentTarget.src = '';
+                     e.currentTarget.style.display = 'none';
+                   }}
+                 />
                 <span className="font-medium text-sm">{teamLeader.team.displayName}</span>
               </div>
               <div className="space-y-2">
@@ -236,9 +244,13 @@ const GamePreview: React.FC<GamePreviewProps> = ({ boxScore, isLoading, onClose 
                       {category.leaders.map((leader, idx) => (
                         <div key={idx} className="flex items-center gap-2">
                           <img 
-                            src={leader.athlete.headshot.href} 
+                            src={leader.athlete.headshot?.href || ''} 
                             alt={leader.athlete.displayName}
                             className="w-6 h-6 rounded-full"
+                            onError={(e) => {
+                              e.currentTarget.src = '';
+                              e.currentTarget.style.display = 'none';
+                            }}
                           />
                           <div>
                             <span className="text-xs font-medium">{leader.athlete.displayName}</span>

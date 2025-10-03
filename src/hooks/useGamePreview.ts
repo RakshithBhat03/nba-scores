@@ -13,9 +13,11 @@ export const useGamePreview = () => {
     refetch
   } = useQuery({
     queryKey: ['boxScore', selectedGameId],
-    queryFn: () => selectedGameId ? sportsApi.getBoxScore(selectedGameId) : null,
+    queryFn: () => selectedGameId ? sportsApi.getBoxScore(selectedGameId) : Promise.resolve(null),
     enabled: !!selectedGameId && isPreviewOpen,
     staleTime: 30000, // 30 seconds
+    retry: 2,
+    retryDelay: 1000,
   });
 
   const openPreview = (gameId: string) => {
