@@ -104,7 +104,10 @@ export function useScores(date?: Date) {
         };
       }).filter(Boolean) as Game[];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 2 * 60 * 1000, // 2 minutes - reduced for fresher data
     refetchInterval: 30000, // Refetch every 30 seconds
+    refetchOnWindowFocus: true, // Refetch when extension popup opens
+    refetchOnMount: true, // Always refetch when component mounts
+    initialDataUpdatedAt: 0, // Force initial fetch if data is old
   });
 }
