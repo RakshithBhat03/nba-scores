@@ -136,6 +136,14 @@ export default function ScoresList() {
         onDateChange={setSelectedDate}
       />
 
+      {/* Background refresh indicator */}
+      {isFetching && games && (
+        <div className="flex items-center justify-center text-xs text-muted-foreground py-1">
+          <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+          Updating scores...
+        </div>
+      )}
+
       <div className="w-full">
         {selectedGameId ? (
           <GamePreview

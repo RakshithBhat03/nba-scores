@@ -53,4 +53,6 @@ temp/
 
 # Claude and OpenCode documentation
 CLAUDE.md
-AGENTS.mdCRUSH.md
+AGENTS.md
+CRUSH.md
+SECURITY.md

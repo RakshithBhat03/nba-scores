@@ -1,4 +1,14 @@
 import { UserSettings } from '../types/settings';
+import { z } from 'zod';
+
+// Schema validation for stored settings
+const settingsSchema = z.object({
+  theme: z.enum(['light', 'dark', 'system']).optional(),
+  timezone: z.string().optional(),
+  autoRefresh: z.boolean().optional(),
+  refreshInterval: z.number().optional(),
+  favoriteTeams: z.array(z.string()).optional()
+});
 
 const DEFAULT_SETTINGS: UserSettings = {
   theme: 'system',
@@ -16,9 +26,22 @@ export const storage = {
         const result = await chrome.storage.sync.get('settings');
         return { ...DEFAULT_SETTINGS, ...result.settings };
       } else {
-        // Fallback to localStorage for development
+        // Fallback to localStorage for development with validation
         const stored = localStorage.getItem('nba-settings');
-        return stored ? { ...DEFAULT_SETTINGS, ...JSON.parse(stored) } : DEFAULT_SETTINGS;
+        if (!stored) {
+          return DEFAULT_SETTINGS;
+        }
+        
+        try {
+          const parsed = JSON.parse(stored);
+          const validated = settingsSchema.parse(parsed);
+          return { ...DEFAULT_SETTINGS, ...validated };
+        } catch (parseError) {
+          console.warn('Invalid settings in localStorage, using defaults:', parseError);
+          // Clear invalid data
+          localStorage.removeItem('nba-settings');
+          return DEFAULT_SETTINGS;
+        }
       }
     } catch (error) {
       console.error('Failed to get settings:', error);
