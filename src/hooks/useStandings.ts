@@ -2,6 +2,20 @@ import { useQuery } from '@tanstack/react-query';
 import type { Standings } from '../types/game';
 import nbaTeamsData from '../data/nbaTeams.json';
 
+// URL validation helper
+function isValidApiUrl(url: string): boolean {
+  try {
+    const parsedUrl = new URL(url);
+    // Only allow HTTPS and specific domains
+    return parsedUrl.protocol === 'https:' && 
+           (parsedUrl.hostname.includes('espn') || 
+            parsedUrl.hostname.includes('nba') ||
+            parsedUrl.hostname.includes('cdn'));
+  } catch {
+    return false;
+  }
+}
+
 interface TeamStandingWithStats {
   team: {
     id: string;
@@ -39,7 +53,13 @@ async function fetchConferenceStandings(groupId: number): Promise<TeamStandingWi
     if (standingsData.standings) {
       for (const entry of standingsData.standings) {
         try {
-          // Fetch team details
+          // Validate team URL before fetching
+          if (!entry.team?.$ref || !isValidApiUrl(entry.team.$ref)) {
+            console.warn('Invalid or missing team URL:', entry.team?.$ref);
+            continue;
+          }
+
+          // Fetch team details with validated URL
           const teamResponse = await fetch(entry.team.$ref);
           if (!teamResponse.ok) continue;
 
@@ -136,7 +156,7 @@ async function fetchStandingsFromApi(): Promise<TeamStandingWithStats[]> {
   }
 }
 
-async function fetchStandings(): Promise<Standings> {
+export async function fetchStandings(): Promise<Standings> {
   try {
     const allTeams = await fetchStandingsFromApi();
 
@@ -225,9 +245,12 @@ export function useStandings() {
   return useQuery({
     queryKey: ['standings'],
     queryFn: fetchStandings,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes - standings change less frequently
     gcTime: 30 * 60 * 1000, // 30 minutes
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    refetchOnWindowFocus: true, // Refetch when extension popup opens
+    refetchOnMount: true, // Always refetch when component mounts
+    initialDataUpdatedAt: 0, // Force initial fetch if data is old
   });
 }

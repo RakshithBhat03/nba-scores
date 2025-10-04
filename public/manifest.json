@@ -27,6 +27,6 @@
     "128": "icons/icon128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://your-nba-api-endpoint.com https://your-core-nba-api-endpoint.com https://cdn.espn.com https://site.web.api.espn.com https://sports.core.api.espn.com;"
   }
 }

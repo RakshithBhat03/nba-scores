@@ -98,6 +98,14 @@ export default function StandingsList() {
 
   return (
     <div className="space-y-2 w-full">
+      {/* Background refresh indicator */}
+      {isFetching && standings && (
+        <div className="flex items-center justify-center text-xs text-muted-foreground py-1">
+          <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+          Updating standings...
+        </div>
+      )}
+
       <Tabs value={selectedConference} onValueChange={setSelectedConference} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="eastern">Eastern Conference</TabsTrigger>
