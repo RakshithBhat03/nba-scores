@@ -5,6 +5,7 @@ import ScoresList from './components/scores/ScoresList';
 import StandingsList from './components/standings/StandingsList';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { useTheme } from './hooks/useTheme';
+import { usePrefetchData } from './hooks/usePrefetchData';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,6 +14,9 @@ const queryClient = new QueryClient({
       gcTime: 5 * 60 * 1000, // 5 minutes
       retry: 3,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      refetchOnWindowFocus: true, // Refetch when extension popup opens
+      refetchOnMount: true, // Always refetch when component mounts
+      refetchOnReconnect: true, // Refetch when network reconnects
     },
   },
 });
@@ -20,6 +24,7 @@ const queryClient = new QueryClient({
 function AppContent() {
   const [currentView, setCurrentView] = useState<'scores' | 'standings'>('scores');
   useTheme(); // Initialize theme
+  usePrefetchData(); // Pre-fetch data and keep it fresh
 
   return (
     <div className="bg-background text-foreground w-[540px] h-[600px] flex flex-col overflow-hidden">
