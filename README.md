@@ -18,7 +18,7 @@ A modern Chrome extension for real-time NBA scores, standings, and game informat
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/nba-scores.git
+   git clone https://github.com/RakshithBhat03/nba-scores.git
    cd nba-scores
    ```
 
