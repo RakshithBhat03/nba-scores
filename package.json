@@ -12,12 +12,9 @@
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.0.4",
-    "@radix-ui/react-scroll-area": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
-    "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-query": "^5.17.0",
-    "ccusage": "^17.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "date-fns": "^3.0.0",
@@ -29,7 +26,7 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.258",
+    "@types/chrome": "^0.1.22",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",

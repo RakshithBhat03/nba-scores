@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { sportsApi } from '../services/api';
-import { Game } from '../types/game';
+import { Game, GameEvent, GameCompetitor } from '../types/game';
 import { format, subDays } from 'date-fns';
 
 export function useScores(date?: Date) {
@@ -40,7 +40,7 @@ export function useScores(date?: Date) {
       // Filter events to only show games that occur on the user's local date
       
       return data.events
-        .filter((event: any) => {
+        .filter((event: GameEvent) => {
           const gameDate = new Date(event.date);
           const gameLocalDate = gameDate.toLocaleDateString('en-US', { 
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
@@ -50,15 +50,15 @@ export function useScores(date?: Date) {
           });
           return gameLocalDate === targetLocalDate;
         })
-        .map((event: any): Game | null => {
+        .map((event: GameEvent): Game | null => {
         const competition = event.competitions?.[0];
         if (!competition) {
           return null;
         }
 
         // Find home and away teams (home is typically homeAway: 'home')
-        const homeTeam = competition.competitors.find((c: any) => c.homeAway === 'home') || competition.competitors[0];
-        const awayTeam = competition.competitors.find((c: any) => c.homeAway === 'away') || competition.competitors[1];
+        const homeTeam = competition.competitors.find((c: GameCompetitor) => c.homeAway === 'home') || competition.competitors[0];
+        const awayTeam = competition.competitors.find((c: GameCompetitor) => c.homeAway === 'away') || competition.competitors[1];
 
         // Map status names to our format
         const statusMap: Record<string, 'scheduled' | 'in' | 'final'> = {
