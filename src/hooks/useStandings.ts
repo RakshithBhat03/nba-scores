@@ -55,7 +55,7 @@ async function fetchConferenceStandings(groupId: number): Promise<TeamStandingWi
         try {
           // Validate team URL before fetching
           if (!entry.team?.$ref || !isValidApiUrl(entry.team.$ref)) {
-            console.warn('Invalid or missing team URL:', entry.team?.$ref);
+          
             continue;
           }
 
@@ -127,7 +127,7 @@ async function fetchConferenceStandings(groupId: number): Promise<TeamStandingWi
             });
           }
         } catch (error) {
-          console.warn('Failed to process team entry:', error);
+        
           continue;
         }
       }
@@ -135,7 +135,7 @@ async function fetchConferenceStandings(groupId: number): Promise<TeamStandingWi
 
     return teamStandings;
   } catch (error) {
-    console.warn(`Failed to fetch standings for group ${groupId}:`, error);
+
     return [];
   }
 }
@@ -151,7 +151,7 @@ async function fetchStandingsFromApi(): Promise<TeamStandingWithStats[]> {
     // Combine both conferences
     return [...easternStandings, ...westernStandings];
   } catch (error) {
-    console.warn('Failed to fetch standings from API:', error);
+  
     return [];
   }
 }
@@ -232,7 +232,7 @@ export async function fetchStandings(): Promise<Standings> {
 
     return standings;
   } catch (error) {
-    console.warn('Failed to fetch standings from API, using empty fallback:', error);
+  
     // Return empty standings as fallback
     return {
       season: { year: 2025, type: 2 },

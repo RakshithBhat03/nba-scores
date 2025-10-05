@@ -37,8 +37,6 @@ export const storage = {
           const validated = settingsSchema.parse(parsed);
           return { ...DEFAULT_SETTINGS, ...validated };
         } catch (parseError) {
-          console.warn('Invalid settings in localStorage, using defaults:', parseError);
-          // Clear invalid data
           localStorage.removeItem('nba-settings');
           return DEFAULT_SETTINGS;
         }

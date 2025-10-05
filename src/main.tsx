@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-console.log('NBA Scores Extension starting...');
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -11,7 +10,6 @@ if (!rootElement) {
   throw new Error('Root element not found');
 }
 
-console.log('Root element found, creating React root...');
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
@@ -19,5 +17,3 @@ root.render(
     <App />
   </React.StrictMode>
 );
-
-console.log('React app rendered successfully!');
