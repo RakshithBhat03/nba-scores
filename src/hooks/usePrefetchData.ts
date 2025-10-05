@@ -27,7 +27,7 @@ export function usePrefetchData() {
           staleTime: 2 * 60 * 1000, // 2 minutes
         });
       } catch (error) {
-        console.warn('Failed to pre-fetch scores:', error);
+        // Silently handle prefetch errors
       }
     };
 
@@ -44,7 +44,7 @@ export function usePrefetchData() {
           staleTime: 10 * 60 * 1000, // 10 minutes
         });
       } catch (error) {
-        console.warn('Failed to pre-fetch standings:', error);
+        // Silently handle prefetch errors
       }
     };
 
