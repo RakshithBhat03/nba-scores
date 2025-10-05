@@ -1,56 +1,64 @@
 import { useQuery } from '@tanstack/react-query';
 import { sportsApi } from '../services/api';
-import { Game, GameEvent, GameCompetitor } from '../types/game';
-import { format, startOfDay, addDays } from 'date-fns';
+import { Game } from '../types/game';
+import { format, subDays } from 'date-fns';
 
 export function useScores(date?: Date) {
   const targetDate = date || new Date();
-  const normalizedDate = startOfDay(targetDate);
-
-  // Calculate 5-day window centered on the target date (±2 days)
-  const windowStart = addDays(normalizedDate, -2);
-  const windowEnd = addDays(normalizedDate, 2);
-  const windowKey = format(windowStart, 'yyyyMMdd');
+  
+  // Query both the target date and previous day to catch games that cross UTC boundaries
+  const dateString = format(targetDate, 'yyyyMMdd');
+  const prevDayString = format(subDays(targetDate, 1), 'yyyyMMdd');
 
   return useQuery({
-    queryKey: ['scores', 'window', windowKey],
+    queryKey: ['scores', dateString],
     queryFn: async () => {
-      try {
-        // Query for the 5-day window containing the target date
-        const startDate = format(windowStart, 'yyyyMMdd');
-        const endDate = format(windowEnd, 'yyyyMMdd');
-        const dateRange = `${startDate}-${endDate}`;
-        const data = await sportsApi.getScoreboard(dateRange);
-        return data;
-      } catch (error) {
-        console.error('API error fetching scores:', error);
-        throw error;
-      }
+      // Query both target date and previous day
+      const [targetData, prevData] = await Promise.all([
+        sportsApi.getScoreboard(dateString),
+        sportsApi.getScoreboard(prevDayString)
+      ]);
+      
+      // Combine events from both days
+      const allEvents = [
+        ...(targetData.events || []),
+        ...(prevData.events || [])
+      ];
+      
+      // Remove duplicates by ID
+      const uniqueEvents = allEvents.filter((event, index, arr) => 
+        arr.findIndex(e => e.id === event.id) === index
+      );
+      
+      return { ...targetData, events: uniqueEvents };
     },
     select: (data): Game[] => {
       if (!data?.events) {
         return [];
       }
 
+      // Filter events to only show games that occur on the user's local date
+      
       return data.events
-        .filter((event: GameEvent) => {
-          if (!date) return true;
-          // Filter games to only include those occurring on the selected date in user's timezone
+        .filter((event: any) => {
           const gameDate = new Date(event.date);
-          const gameInUserTimezone = new Date(gameDate.toLocaleString("en-US", {
-            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-          }));
-          return gameInUserTimezone.toDateString() === date.toDateString();
+          const gameLocalDate = gameDate.toLocaleDateString('en-US', { 
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
+          });
+          const targetLocalDate = targetDate.toLocaleDateString('en-US', { 
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
+          });
+          return gameLocalDate === targetLocalDate;
         })
-        .map((event: GameEvent): Game | null => {
+        .map((event: any): Game | null => {
         const competition = event.competitions?.[0];
         if (!competition) {
           return null;
         }
 
         // Find home and away teams (home is typically homeAway: 'home')
-        const homeTeam = competition.competitors.find((c: GameCompetitor) => c.homeAway === 'home') || competition.competitors[0];
-        const awayTeam = competition.competitors.find((c: GameCompetitor) => c.homeAway === 'away') || competition.competitors[1];
+        const homeTeam = competition.competitors.find((c: any) => c.homeAway === 'home') || competition.competitors[0];
+        const awayTeam = competition.competitors.find((c: any) => c.homeAway === 'away') || competition.competitors[1];
 
         // Map status names to our format
         const statusMap: Record<string, 'scheduled' | 'in' | 'final'> = {
@@ -104,10 +112,6 @@ export function useScores(date?: Date) {
         };
       }).filter(Boolean) as Game[];
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes - reduced for fresher data
     refetchInterval: 30000, // Refetch every 30 seconds
-    refetchOnWindowFocus: true, // Refetch when extension popup opens
-    refetchOnMount: true, // Always refetch when component mounts
-    initialDataUpdatedAt: 0, // Force initial fetch if data is old
   });
 }
