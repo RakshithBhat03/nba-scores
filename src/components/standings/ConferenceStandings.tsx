@@ -1,6 +1,7 @@
 import { Conference } from '../../types/game';
 import TeamStandingRow from './TeamStandingRow';
 import { Card } from '@/components/ui/card';
+import nbaLogo48 from '/icons/icon48.png';
 
 interface ConferenceStandingsProps {
   conference: Conference;
@@ -11,7 +12,11 @@ export default function ConferenceStandings({ conference }: ConferenceStandingsP
     return (
       <Card className="overflow-hidden">
         <div className="p-8 text-center">
-          <div className="text-4xl mb-4">🏀</div>
+          <img
+            src={nbaLogo48}
+            alt="NBA Logo"
+            className="w-16 h-16 mb-4 mx-auto"
+          />
           <h3 className="text-lg font-semibold text-foreground mb-2">
             No standings available
           </h3>

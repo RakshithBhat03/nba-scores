@@ -3,6 +3,7 @@ import { useQueryClient, useIsFetching } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ThemeToggle from '../settings/ThemeToggle';
+import nbaLogo32 from '/icons/icon32.png';
 
 interface HeaderProps {
   currentView: 'scores' | 'standings';
@@ -21,9 +22,16 @@ export default function Header({ currentView, onViewChange }: HeaderProps) {
   return (
     <header className="bg-gradient-to-r from-nba-primary-600 to-nba-primary-700 dark:from-nba-primary-700 dark:to-nba-primary-800 text-white px-4 py-4 shadow-lg">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-          🏀 NBA Scores
-        </h1>
+        <div className="flex items-center gap-2">
+          <img
+            src={nbaLogo32}
+            alt="NBA Logo"
+            className="w-6 h-6"
+          />
+          <h1 className="text-xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+            NBA Scores
+          </h1>
+        </div>
         <div className="flex items-center gap-2">
           <Button
             onClick={handleRefresh}
