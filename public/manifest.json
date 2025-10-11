@@ -6,7 +6,12 @@
   "permissions": [
     "storage"
   ],
-  "host_permissions": [],
+  "host_permissions": [
+    "https://site.api.espn.com/*",
+    "https://site.web.api.espn.com/*",
+    "https://cdn.espn.com/*",
+    "http://sports.core.api.espn.com/*"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_title": "NBA Scores",
@@ -24,6 +29,6 @@
     "128": "icons/icon128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https:;"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://cdn.espn.com http://sports.core.api.espn.com;"
   }
 }
