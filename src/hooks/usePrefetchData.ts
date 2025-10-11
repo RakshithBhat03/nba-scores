@@ -37,8 +37,8 @@ export function usePrefetchData() {
         await queryClient.prefetchQuery({
           queryKey: ['standings'],
           queryFn: async () => {
-            // Import the fetchStandings function directly
-            const { fetchStandings } = await import('../hooks/useStandings');
+            // Import the fetchStandings function from utils
+            const { fetchStandings } = await import('../utils/standingsUtils');
             return fetchStandings();
           },
           staleTime: 10 * 60 * 1000, // 10 minutes
