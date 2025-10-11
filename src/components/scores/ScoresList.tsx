@@ -11,6 +11,7 @@ import { RefreshCw, AlertCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { sportsApi } from '../../services/api';
 import { format, startOfDay, addDays } from 'date-fns';
+import nbaLogo48 from '/icons/icon48.png';
 
 function GameCardSkeleton() {
   return (
@@ -169,7 +170,11 @@ export default function ScoresList() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🏀</div>
+            <img
+              src={nbaLogo48}
+              alt="NBA Logo"
+              className="w-24 h-24 mb-4 mx-auto"
+            />
             <h3 className="text-lg font-semibold text-foreground mb-2">
               No games scheduled
             </h3>
