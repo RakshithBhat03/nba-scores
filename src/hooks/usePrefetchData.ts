@@ -1,6 +1,7 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { sportsApi } from '../services/api';
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { sportsApi } from "../services/api";
+import { fetchStandings } from "../utils/standingsUtils";
 
 export function usePrefetchData() {
   const queryClient = useQueryClient();
@@ -10,7 +11,7 @@ export function usePrefetchData() {
     const prefetchScores = async () => {
       try {
         await queryClient.prefetchQuery({
-          queryKey: ['scores', 'window', new Date().toISOString().slice(0, 10)],
+          queryKey: ["scores", "window", new Date().toISOString().slice(0, 10)],
           queryFn: async () => {
             // Get current date and format for API
             const date = new Date();
@@ -18,10 +19,11 @@ export function usePrefetchData() {
             startDate.setDate(date.getDate() - 2);
             const endDate = new Date(date);
             endDate.setDate(date.getDate() + 2);
-            
-            const formatDate = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '');
+
+            const formatDate = (d: Date) =>
+              d.toISOString().slice(0, 10).replace(/-/g, "");
             const dateRange = `${formatDate(startDate)}-${formatDate(endDate)}`;
-            
+
             return sportsApi.getScoreboard(dateRange);
           },
           staleTime: 2 * 60 * 1000, // 2 minutes
@@ -35,12 +37,8 @@ export function usePrefetchData() {
     const prefetchStandings = async () => {
       try {
         await queryClient.prefetchQuery({
-          queryKey: ['standings'],
-          queryFn: async () => {
-            // Import the fetchStandings function from utils
-            const { fetchStandings } = await import('../utils/standingsUtils');
-            return fetchStandings();
-          },
+          queryKey: ["standings"],
+          queryFn: () => fetchStandings(),
           staleTime: 10 * 60 * 1000, // 10 minutes
         });
       } catch (error) {
