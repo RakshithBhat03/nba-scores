@@ -1,11 +1,11 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
-import Header from './components/common/Header';
-import ScoresList from './components/scores/ScoresList';
-import StandingsList from './components/standings/StandingsList';
-import ErrorBoundary from './components/common/ErrorBoundary';
-import { useTheme } from './hooks/useTheme';
-import { usePrefetchData } from './hooks/usePrefetchData';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
+import Header from "./components/common/Header";
+import ScoresList from "./components/scores/ScoresList";
+import StandingsList from "./components/standings/StandingsList";
+import ErrorBoundary from "./components/common/ErrorBoundary";
+import { useTheme } from "./hooks/useTheme";
+import { usePrefetchData } from "./hooks/usePrefetchData";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,7 +22,10 @@ const queryClient = new QueryClient({
 });
 
 function AppContent() {
-  const [currentView, setCurrentView] = useState<'scores' | 'standings'>('scores');
+  const [currentView, setCurrentView] = useState<"scores" | "standings">(
+    "scores",
+  );
+  const [selectedDate, setSelectedDate] = useState(new Date());
   useTheme(); // Initialize theme
   usePrefetchData(); // Pre-fetch data and keep it fresh
 
@@ -31,11 +34,17 @@ function AppContent() {
       <Header
         currentView={currentView}
         onViewChange={setCurrentView}
+        selectedDate={selectedDate}
       />
       <main className="px-2 pt-2 pb-2 bg-background flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto scrollbar-thin">
-          {currentView === 'scores' && <ScoresList />}
-          {currentView === 'standings' && <StandingsList />}
+          {currentView === "scores" && (
+            <ScoresList
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
+            />
+          )}
+          {currentView === "standings" && <StandingsList />}
         </div>
       </main>
     </div>
