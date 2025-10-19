@@ -3,14 +3,13 @@
   "name": "NBA Scores",
   "version": "1.0.0",
   "description": "Get live NBA scores, standings, and detailed box scores with dark theme support",
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
   "host_permissions": [
     "https://site.api.espn.com/*",
     "https://site.web.api.espn.com/*",
     "https://cdn.espn.com/*",
-    "http://sports.core.api.espn.com/*"
+    "http://sports.core.api.espn.com/*",
+    "https://sports.core.api.espn.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -29,6 +28,6 @@
     "128": "icons/icon128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://cdn.espn.com http://sports.core.api.espn.com;"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://cdn.espn.com http://sports.core.api.espn.com https://sports.core.api.espn.com;"
   }
 }
