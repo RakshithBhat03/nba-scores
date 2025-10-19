@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useScores } from '../../hooks/useScores';
-import { useGamePreview } from '@/hooks/useGamePreview';
-import { BoxScore } from '@/types/game';
-import GameCard from './GameCard';
-import GamePreview from './GamePreview';
-import DateCarousel from './DateCarousel';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { RefreshCw, AlertCircle } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
-import { sportsApi } from '../../services/api';
-import { format, startOfDay, addDays } from 'date-fns';
-import nbaLogo48 from '/icons/icon48.png';
+import { useState, useEffect } from "react";
+import { useScores } from "../../hooks/useScores";
+import { useGamePreview } from "@/hooks/useGamePreview";
+import { BoxScore } from "@/types/game";
+import GameCard from "./GameCard";
+import GamePreview from "./GamePreview";
+import DateCarousel from "./DateCarousel";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { RefreshCw, AlertCircle } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { sportsApi } from "../../services/api";
+import { format, startOfDay, addDays } from "date-fns";
+import nbaLogo48 from "/icons/icon48.png";
 
 function GameCardSkeleton() {
   return (
@@ -36,11 +36,23 @@ function GameCardSkeleton() {
   );
 }
 
-export default function ScoresList() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+interface ScoresListProps {
+  selectedDate: Date;
+  onDateChange: (date: Date) => void;
+}
+
+export default function ScoresList({
+  selectedDate,
+  onDateChange,
+}: ScoresListProps) {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const { data: games, isLoading, error, isFetching } = useScores(selectedDate);
-  const { boxScore, isLoading: isPreviewLoading, openPreview, closePreview } = useGamePreview();
+  const {
+    boxScore,
+    isLoading: isPreviewLoading,
+    openPreview,
+    closePreview,
+  } = useGamePreview();
   const queryClient = useQueryClient();
 
   // Prefetch adjacent windows for smoother navigation
@@ -48,12 +60,12 @@ export default function ScoresList() {
     const prefetchWindow = (date: Date) => {
       const normalizedDate = startOfDay(date);
       const windowStart = addDays(normalizedDate, -2);
-      const windowKey = format(windowStart, 'yyyyMMdd');
+      const windowKey = format(windowStart, "yyyyMMdd");
       queryClient.prefetchQuery({
-        queryKey: ['scores', 'window', windowKey],
+        queryKey: ["scores", "window", windowKey],
         queryFn: async () => {
-          const startDate = format(windowStart, 'yyyyMMdd');
-          const endDate = format(addDays(windowStart, 4), 'yyyyMMdd');
+          const startDate = format(windowStart, "yyyyMMdd");
+          const endDate = format(addDays(windowStart, 4), "yyyyMMdd");
           const dateRange = `${startDate}-${endDate}`;
           return await sportsApi.getScoreboard(dateRange);
         },
@@ -63,15 +75,17 @@ export default function ScoresList() {
 
     // Prefetch previous and next windows
     prefetchWindow(addDays(selectedDate, -5)); // Previous window
-    prefetchWindow(addDays(selectedDate, 5));  // Next window
+    prefetchWindow(addDays(selectedDate, 5)); // Next window
   }, [selectedDate, queryClient]);
 
   const handleRefresh = () => {
     // Calculate the window key for the current selected date
     const normalizedDate = startOfDay(selectedDate);
     const windowStart = addDays(normalizedDate, -2);
-    const windowKey = format(windowStart, 'yyyyMMdd');
-    queryClient.invalidateQueries({ queryKey: ['scores', 'window', windowKey] });
+    const windowKey = format(windowStart, "yyyyMMdd");
+    queryClient.invalidateQueries({
+      queryKey: ["scores", "window", windowKey],
+    });
   };
 
   const handleGameClick = (gameId: string) => {
@@ -79,7 +93,7 @@ export default function ScoresList() {
       setSelectedGameId(gameId);
       openPreview(gameId);
     } catch (error) {
-      console.error('Failed to open game preview:', error);
+      console.error("Failed to open game preview:", error);
       // Reset selected game ID on error
       setSelectedGameId(null);
     }
@@ -93,10 +107,7 @@ export default function ScoresList() {
   if (isLoading || (isFetching && !games)) {
     return (
       <div className="space-y-4">
-        <DateCarousel
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-        />
+        <DateCarousel selectedDate={selectedDate} onDateChange={onDateChange} />
         <div className="grid grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <GameCardSkeleton key={i} />
@@ -109,10 +120,7 @@ export default function ScoresList() {
   if (error) {
     return (
       <div className="space-y-4">
-        <DateCarousel
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-        />
+        <DateCarousel selectedDate={selectedDate} onDateChange={onDateChange} />
         <div className="py-8 text-center space-y-4">
           <div className="flex items-center justify-center text-destructive mb-2">
             <AlertCircle className="h-6 w-6 mr-2" />
@@ -132,10 +140,7 @@ export default function ScoresList() {
 
   return (
     <div className="space-y-2 w-full">
-      <DateCarousel
-        selectedDate={selectedDate}
-        onDateChange={setSelectedDate}
-      />
+      <DateCarousel selectedDate={selectedDate} onDateChange={onDateChange} />
 
       {/* Background refresh indicator */}
       {isFetching && games && (
@@ -160,7 +165,7 @@ export default function ScoresList() {
                   key={game.id}
                   game={game}
                   onCardClick={() => {
-                    if (game.status === 'in' || game.status === 'final') {
+                    if (game.status === "in" || game.status === "final") {
                       handleGameClick(game.id);
                     }
                   }}
@@ -184,7 +189,6 @@ export default function ScoresList() {
           </div>
         )}
       </div>
-
     </div>
   );
 }
