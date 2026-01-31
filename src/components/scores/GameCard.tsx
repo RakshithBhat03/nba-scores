@@ -3,7 +3,6 @@ import { formatGameTime, cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { MapPin } from 'lucide-react';
 
 interface GameCardProps {
   game: Game;
@@ -75,11 +74,18 @@ export default function GameCard({ game, onCardClick }: GameCardProps) {
       onClick={() => onCardClick(game.id)}
       className="cursor-pointer group"
     >
-        <div className="space-y-3">
+        <div className="space-y-2">
+          {/* Column Headers */}
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-wider">
+            <div className="flex-1">Away</div>
+            <div className="px-4 flex-shrink-0"></div>
+            <div className="flex-1 text-right">Home</div>
+          </div>
+
           {/* Teams Section */}
           <div className="flex items-center justify-between">
             {/* Away Team */}
-            <div className="flex items-center space-x-3 min-w-0 flex-1">
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
               <Avatar className="h-8 w-8 border border-border flex-shrink-0 group-hover:border-primary/50 transition-colors duration-200">
                 <AvatarImage
                   src={game.awayTeam.logo}
@@ -91,7 +97,7 @@ export default function GameCard({ game, onCardClick }: GameCardProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="text-xs font-semibold truncate min-w-0 group-hover:text-primary transition-colors duration-200">
-                {game.awayTeam.name}
+                {game.awayTeam.abbreviation}
               </div>
             </div>
 
@@ -115,9 +121,9 @@ export default function GameCard({ game, onCardClick }: GameCardProps) {
             </div>
 
             {/* Home Team */}
-            <div className="flex items-center space-x-3 min-w-0 flex-1 justify-end">
+            <div className="flex items-center space-x-2 min-w-0 flex-1 justify-end">
               <div className="text-xs font-semibold truncate min-w-0 text-right group-hover:text-primary transition-colors duration-200">
-                {game.homeTeam.name}
+                {game.homeTeam.abbreviation}
               </div>
               <Avatar className="h-8 w-8 border border-border flex-shrink-0 group-hover:border-primary/50 transition-colors duration-200">
                 <AvatarImage
@@ -137,15 +143,6 @@ export default function GameCard({ game, onCardClick }: GameCardProps) {
             {getStatusDisplay()}
           </div>
         </div>
-
-        {game.venue && (
-          <div className="flex items-center justify-center mt-4 pt-3 border-t border-border">
-            <MapPin className="h-3 w-3 text-muted-foreground mr-1" />
-            <span className="text-xs text-muted-foreground truncate">
-              {game.venue}
-            </span>
-          </div>
-        )}
       </Card>
   );
 }

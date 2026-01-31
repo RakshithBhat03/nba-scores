@@ -3,6 +3,7 @@ import { useQueryClient, useIsFetching } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ThemeToggle from "../settings/ThemeToggle";
+import FavoriteTeamSelector from "../settings/FavoriteTeamSelector";
 import { format, startOfDay, addDays } from "date-fns";
 import nbaLogo32 from "/icons/icon32.png";
 
@@ -46,7 +47,8 @@ export default function Header({
             NBA Scores
           </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <FavoriteTeamSelector />
           <Button
             onClick={handleRefresh}
             disabled={isFetching > 0}

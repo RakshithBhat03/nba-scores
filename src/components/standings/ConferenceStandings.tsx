@@ -37,7 +37,7 @@ export default function ConferenceStandings({ conference }: ConferenceStandingsP
             <span className="w-6 text-center">#</span>
             <span>Team</span>
           </div>
-          <div className="flex space-x-6 text-center">
+          <div className="flex space-x-4 text-center">
             <span className="w-8">W</span>
             <span className="w-8">L</span>
             <span className="w-12">PCT</span>

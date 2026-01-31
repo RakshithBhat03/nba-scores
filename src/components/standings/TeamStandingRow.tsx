@@ -77,7 +77,7 @@ export default function TeamStandingRow({ teamStanding, rank }: TeamStandingRowP
       </div>
 
       {/* Stats */}
-      <div className="flex space-x-6 text-center text-sm">
+      <div className="flex space-x-4 text-center text-sm">
         <div className="w-8 font-semibold">{wins}</div>
         <div className="w-8 font-semibold">{losses}</div>
         <div className="w-12 font-medium">{winPercent}</div>

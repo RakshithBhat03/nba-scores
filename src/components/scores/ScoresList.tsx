@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useScores } from "../../hooks/useScores";
 import { useGamePreview } from "@/hooks/useGamePreview";
+import { useFavoriteTeam } from "@/hooks/useFavoriteTeam";
+import { sortGamesByPriority } from "@/utils/gameUtils";
 import { BoxScore } from "@/types/game";
 import GameCard from "./GameCard";
 import GamePreview from "./GamePreview";
@@ -47,6 +49,7 @@ export default function ScoresList({
 }: ScoresListProps) {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const { data: games, isLoading, error, isFetching } = useScores(selectedDate);
+  const { favoriteTeam } = useFavoriteTeam();
   const {
     boxScore,
     isLoading: isPreviewLoading,
@@ -54,6 +57,11 @@ export default function ScoresList({
     closePreview,
   } = useGamePreview();
   const queryClient = useQueryClient();
+
+  const sortedGames = useMemo(() => {
+    if (!games) return games;
+    return sortGamesByPriority(games, favoriteTeam);
+  }, [games, favoriteTeam]);
 
   // Prefetch adjacent windows for smoother navigation
   useEffect(() => {
@@ -108,7 +116,7 @@ export default function ScoresList({
     return (
       <div className="space-y-4">
         <DateCarousel selectedDate={selectedDate} onDateChange={onDateChange} />
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <GameCardSkeleton key={i} />
           ))}
@@ -157,10 +165,10 @@ export default function ScoresList({
             isLoading={isPreviewLoading}
             onClose={handleBackToScores}
           />
-        ) : games && games.length > 0 ? (
+        ) : sortedGames && sortedGames.length > 0 ? (
           <div className="w-full">
-            <div className="grid grid-cols-3 gap-3 w-full">
-              {games.map((game) => (
+            <div className="grid grid-cols-3 gap-2 w-full">
+              {sortedGames.map((game) => (
                 <GameCard
                   key={game.id}
                   game={game}

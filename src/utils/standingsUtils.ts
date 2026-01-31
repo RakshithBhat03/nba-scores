@@ -1,6 +1,18 @@
 import type { Standings } from "../types/game";
 import nbaTeamsData from "../data/nbaTeams.json";
 
+// Get current NBA season year (ESPN uses the year the season ends)
+// NBA season runs Oct-June, so Oct-Dec uses next year, Jan-June uses current year
+function getCurrentNBASeason(): number {
+  const now = new Date();
+  const month = now.getMonth(); // 0-indexed (0 = January)
+  const year = now.getFullYear();
+
+  // October (9) through December (11) = next year's season
+  // January (0) through September (8) = current year's season
+  return month >= 9 ? year + 1 : year;
+}
+
 // URL validation helper
 function isValidApiUrl(url: string): boolean {
   try {
@@ -87,10 +99,12 @@ async function fetchWithProtocolTest(
 
 async function fetchConferenceStandings(
   groupId: number,
+  conference: "eastern" | "western",
 ): Promise<TeamStandingWithStats[]> {
   try {
     const coreApiUrl = import.meta.env.VITE_CORE_API_BASE_URL;
-    const endpoint = `/seasons/2025/types/2/groups/${groupId}/standings/0?lang=en&region=us`;
+    const seasonYear = getCurrentNBASeason();
+    const endpoint = `/seasons/${seasonYear}/types/2/groups/${groupId}/standings/0?lang=en&region=us`;
 
     const standingsResponse = await fetchWithProtocolTest(coreApiUrl, endpoint);
 
@@ -132,7 +146,7 @@ async function fetchConferenceStandings(
                 color: team.color || "000000",
                 alternateColor: team.alternateColor || "FFFFFF",
               },
-              conference: teamInfo.conference as "eastern" | "western",
+              conference: conference,
               stats: [
                 {
                   name: "wins",
@@ -249,8 +263,8 @@ async function fetchStandingsFromApi(): Promise<TeamStandingWithStats[]> {
   try {
     // Fetch both Eastern (group 5) and Western (group 6) conference standings
     const [easternStandings, westernStandings] = await Promise.all([
-      fetchConferenceStandings(5), // Eastern Conference
-      fetchConferenceStandings(6), // Western Conference
+      fetchConferenceStandings(5, "eastern"), // Eastern Conference
+      fetchConferenceStandings(6, "western"), // Western Conference
     ]);
 
     // Combine both conferences
@@ -323,7 +337,7 @@ export async function fetchStandings(): Promise<Standings> {
 
     const standings: Standings = {
       season: {
-        year: 2025,
+        year: getCurrentNBASeason(),
         type: 2,
       },
       conferences: [
@@ -352,7 +366,7 @@ export async function fetchStandings(): Promise<Standings> {
   } catch (error) {
     // Return empty standings as fallback
     return {
-      season: { year: 2025, type: 2 },
+      season: { year: getCurrentNBASeason(), type: 2 },
       conferences: [],
     };
   }

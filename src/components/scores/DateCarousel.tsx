@@ -11,7 +11,7 @@ interface DateCarouselProps {
 export default function DateCarousel({ selectedDate, onDateChange }: DateCarouselProps) {
   const getDatesArray = () => {
     const dates = [];
-    for (let i = -3; i <= 3; i++) {
+    for (let i = -2; i <= 2; i++) {
       dates.push(addDays(selectedDate, i));
     }
     return dates;
@@ -49,7 +49,7 @@ export default function DateCarousel({ selectedDate, onDateChange }: DateCarouse
               onClick={() => onDateChange(date)}
               variant={isSelected ? "default" : "ghost"}
               className={cn(
-                "flex flex-col h-auto py-2 px-2 whitespace-nowrap w-[52px] flex-shrink-0",
+                "flex flex-col h-auto py-1.5 px-1 whitespace-nowrap w-[56px] flex-shrink-0",
                 isSelected && "bg-primary shadow-md",
                 isCurrentDay && !isSelected && "bg-nba-primary-100 dark:bg-nba-primary-900 text-nba-primary-700 dark:text-nba-primary-300"
               )}

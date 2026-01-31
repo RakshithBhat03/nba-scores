@@ -24,7 +24,8 @@ export const storage = {
       // Check if chrome.storage is available
       if (typeof chrome !== 'undefined' && chrome.storage) {
         const result = await chrome.storage.sync.get('settings');
-        return { ...DEFAULT_SETTINGS, ...result.settings };
+        const storedSettings = result.settings as Partial<UserSettings> | undefined;
+        return { ...DEFAULT_SETTINGS, ...storedSettings };
       } else {
         // Fallback to localStorage for development with validation
         const stored = localStorage.getItem('nba-settings');
