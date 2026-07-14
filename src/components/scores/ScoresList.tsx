@@ -9,7 +9,7 @@ import GamePreview from "./GamePreview";
 import DateCarousel from "./DateCarousel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RefreshCw, AlertCircle } from "lucide-react";
+import { RefreshCw, AlertCircle, CalendarOff } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sportsApi } from "../../services/api";
 import { format, startOfDay, addDays } from "date-fns";
@@ -17,21 +17,33 @@ import nbaLogo48 from "/icons/icon48.png";
 
 function GameCardSkeleton() {
   return (
-    <div className="p-3 rounded-lg border bg-card">
-      <div className="space-y-3">
+    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-card">
+      <div className="flex items-center justify-center pt-2.5 pb-1.5">
+        <Skeleton className="h-4 w-14 rounded-full" />
+      </div>
+      <div className="space-y-1.5 px-3 pb-3 pt-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Skeleton className="h-8 w-8 rounded-full" />
-            <Skeleton className="h-3 w-8" />
+          <div className="flex items-center gap-2.5">
+            <Skeleton className="h-9 w-9 rounded-full" />
+            <div className="space-y-1">
+              <Skeleton className="h-3 w-10" />
+              <Skeleton className="h-2 w-8" />
+            </div>
           </div>
-          <Skeleton className="h-4 w-10" />
-          <div className="flex items-center space-x-2">
-            <Skeleton className="h-3 w-8" />
-            <Skeleton className="h-8 w-8 rounded-full" />
-          </div>
+          <Skeleton className="h-6 w-7" />
         </div>
-        <div className="text-center">
-          <Skeleton className="h-6 w-16 mx-auto" />
+        <div className="flex items-center gap-3 py-0.5">
+          <div className="h-px flex-1 bg-border/40" />
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Skeleton className="h-9 w-9 rounded-full" />
+            <div className="space-y-1">
+              <Skeleton className="h-3 w-10" />
+              <Skeleton className="h-2 w-8" />
+            </div>
+          </div>
+          <Skeleton className="h-6 w-7" />
         </div>
       </div>
     </div>
@@ -63,7 +75,6 @@ export default function ScoresList({
     return sortGamesByPriority(games, favoriteTeam);
   }, [games, favoriteTeam]);
 
-  // Prefetch adjacent windows for smoother navigation
   useEffect(() => {
     const prefetchWindow = (date: Date) => {
       const normalizedDate = startOfDay(date);
@@ -77,17 +88,15 @@ export default function ScoresList({
           const dateRange = `${startDate}-${endDate}`;
           return await sportsApi.getScoreboard(dateRange);
         },
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
       });
     };
 
-    // Prefetch previous and next windows
-    prefetchWindow(addDays(selectedDate, -5)); // Previous window
-    prefetchWindow(addDays(selectedDate, 5)); // Next window
+    prefetchWindow(addDays(selectedDate, -5));
+    prefetchWindow(addDays(selectedDate, 5));
   }, [selectedDate, queryClient]);
 
   const handleRefresh = () => {
-    // Calculate the window key for the current selected date
     const normalizedDate = startOfDay(selectedDate);
     const windowStart = addDays(normalizedDate, -2);
     const windowKey = format(windowStart, "yyyyMMdd");
@@ -102,7 +111,6 @@ export default function ScoresList({
       openPreview(gameId);
     } catch (error) {
       console.error("Failed to open game preview:", error);
-      // Reset selected game ID on error
       setSelectedGameId(null);
     }
   };
@@ -114,9 +122,9 @@ export default function ScoresList({
 
   if (isLoading || (isFetching && !games)) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         <DateCarousel selectedDate={selectedDate} onDateChange={onDateChange} />
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <GameCardSkeleton key={i} />
           ))}
@@ -127,17 +135,17 @@ export default function ScoresList({
 
   if (error) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         <DateCarousel selectedDate={selectedDate} onDateChange={onDateChange} />
-        <div className="py-8 text-center space-y-4">
-          <div className="flex items-center justify-center text-destructive mb-2">
-            <AlertCircle className="h-6 w-6 mr-2" />
-            <span className="font-semibold">Failed to load games</span>
+        <div className="py-10 text-center space-y-3">
+          <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-destructive/10 text-destructive">
+            <AlertCircle className="h-6 w-6" />
           </div>
+          <span className="block font-semibold">Failed to load games</span>
           <p className="text-muted-foreground text-sm">
             Check your internet connection or try again later
           </p>
-          <Button onClick={handleRefresh} variant="outline" className="mt-4">
+          <Button onClick={handleRefresh} variant="outline" size="sm" className="mt-2">
             <RefreshCw className="h-4 w-4 mr-2" />
             Try Again
           </Button>
@@ -147,13 +155,12 @@ export default function ScoresList({
   }
 
   return (
-    <div className="space-y-2 w-full">
+    <div className="space-y-3 w-full">
       <DateCarousel selectedDate={selectedDate} onDateChange={onDateChange} />
 
-      {/* Background refresh indicator */}
       {isFetching && games && (
-        <div className="flex items-center justify-center text-xs text-muted-foreground py-1">
-          <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+        <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-muted-foreground py-1">
+          <RefreshCw className="h-3 w-3 animate-spin" />
           Updating scores...
         </div>
       )}
@@ -166,34 +173,35 @@ export default function ScoresList({
             onClose={handleBackToScores}
           />
         ) : sortedGames && sortedGames.length > 0 ? (
-          <div className="w-full">
-            <div className="grid grid-cols-3 gap-2 w-full">
-              {sortedGames.map((game) => (
-                <GameCard
-                  key={game.id}
-                  game={game}
-                  onCardClick={() => {
-                    if (game.status === "in" || game.status === "final") {
-                      handleGameClick(game.id);
-                    }
-                  }}
-                />
-              ))}
-            </div>
+          <div className="grid grid-cols-2 gap-3 w-full">
+            {sortedGames.map((game) => (
+              <GameCard
+                key={game.id}
+                game={game}
+                onCardClick={() => {
+                  if (game.status === "in" || game.status === "final") {
+                    handleGameClick(game.id);
+                  }
+                }}
+              />
+            ))}
           </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="flex flex-col items-center justify-center py-14 text-center">
+            <div className="grid h-16 w-16 place-items-center rounded-2xl bg-muted/60 ring-1 ring-border/60">
+              <CalendarOff className="h-7 w-7 text-muted-foreground" />
+            </div>
+            <h3 className="mt-4 text-base font-semibold text-foreground">
+              No games scheduled
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Try selecting a different date to see more games
+            </p>
             <img
               src={nbaLogo48}
               alt="NBA Logo"
-              className="w-24 h-24 mb-4 mx-auto"
+              className="mt-5 h-8 w-8 opacity-30"
             />
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              No games scheduled
-            </h3>
-            <p className="text-muted-foreground">
-              Try selecting a different date to see more games
-            </p>
           </div>
         )}
       </div>

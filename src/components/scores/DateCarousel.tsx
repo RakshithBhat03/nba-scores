@@ -1,6 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, addDays, subDays, isToday, isSameDay } from 'date-fns';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface DateCarouselProps {
@@ -28,51 +27,52 @@ export default function DateCarousel({ selectedDate, onDateChange }: DateCarouse
   };
 
   return (
-    <div className="flex items-center bg-muted/50 backdrop-blur-sm rounded-xl p-3 shadow-sm">
-      <Button
+    <div className="flex items-center gap-1 rounded-xl border border-border/60 bg-muted/40 p-1.5 shadow-sm backdrop-blur-sm">
+      <button
         onClick={goToPreviousDay}
-        variant="ghost"
-        size="icon"
-        className="hover:bg-background/60 flex-shrink-0"
+        aria-label="Previous day"
+        className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
       >
         <ChevronLeft size={16} />
-      </Button>
+      </button>
 
-      <div className="flex gap-2 px-2 flex-1 justify-center overflow-hidden">
+      <div className="flex flex-1 justify-center gap-1 overflow-hidden">
         {dates.map((date) => {
           const isSelected = isSameDay(date, selectedDate);
           const isCurrentDay = isToday(date);
 
           return (
-            <Button
+            <button
               key={date.toISOString()}
               onClick={() => onDateChange(date)}
-              variant={isSelected ? "default" : "ghost"}
               className={cn(
-                "flex flex-col h-auto py-1.5 px-1 whitespace-nowrap w-[56px] flex-shrink-0",
-                isSelected && "bg-primary shadow-md",
-                isCurrentDay && !isSelected && "bg-nba-primary-100 dark:bg-nba-primary-900 text-nba-primary-700 dark:text-nba-primary-300"
+                'flex h-[42px] w-[58px] flex-shrink-0 flex-col items-center justify-center rounded-lg transition-all',
+                isSelected
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-background hover:text-foreground'
               )}
             >
-              <span className="text-xs font-medium leading-tight">
+              <span className={cn('text-[10px] font-medium uppercase leading-none', isSelected ? 'text-primary-foreground/80' : '')}>
                 {format(date, 'EEE')}
               </span>
-              <span className={cn("text-xs leading-tight mt-0.5", isSelected && "font-bold")}>
-                {format(date, 'MMM d')}
+              <span className={cn('mt-0.5 text-xs leading-none tabular-nums', isSelected ? 'font-bold' : 'font-semibold')}>
+                {format(date, 'd')}
               </span>
-            </Button>
+              {isCurrentDay && !isSelected && (
+                <span className="mt-1 h-1 w-1 rounded-full bg-primary" />
+              )}
+            </button>
           );
         })}
       </div>
 
-      <Button
+      <button
         onClick={goToNextDay}
-        variant="ghost"
-        size="icon"
-        className="hover:bg-background/60 flex-shrink-0"
+        aria-label="Next day"
+        className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
       >
         <ChevronRight size={16} />
-      </Button>
+      </button>
     </div>
   );
 }

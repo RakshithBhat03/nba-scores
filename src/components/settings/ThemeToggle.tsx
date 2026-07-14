@@ -1,5 +1,4 @@
 import { Sun, Moon, Monitor } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useTheme } from '../../hooks/useTheme';
 import { motion } from 'framer-motion';
 
@@ -9,13 +8,13 @@ export default function ThemeToggle() {
   const getIcon = () => {
     switch (theme) {
       case 'light':
-        return <Sun size={16} />;
+        return <Sun size={15} />;
       case 'dark':
-        return <Moon size={16} />;
+        return <Moon size={15} />;
       case 'system':
-        return <Monitor size={16} />;
+        return <Monitor size={15} />;
       default:
-        return <Sun size={16} />;
+        return <Sun size={15} />;
     }
   };
 
@@ -33,12 +32,10 @@ export default function ThemeToggle() {
   };
 
   return (
-    <Button
+    <button
       onClick={toggleTheme}
-      variant="ghost"
-      size="icon"
-      className="text-white hover:bg-white/10 transition-all duration-200 hover:scale-105"
       title={getLabel()}
+      className="grid h-8 w-8 place-items-center rounded-lg text-white/90 transition-all duration-200 hover:scale-105 hover:bg-white/15"
     >
       <motion.div
         key={theme}
@@ -48,6 +45,6 @@ export default function ThemeToggle() {
       >
         {getIcon()}
       </motion.div>
-    </Button>
+    </button>
   );
 }

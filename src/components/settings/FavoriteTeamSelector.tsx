@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Star, ChevronDown } from "lucide-react";
 import { useFavoriteTeam } from "@/hooks/useFavoriteTeam";
 import {
   Select,
@@ -35,22 +35,23 @@ export default function FavoriteTeamSelector() {
   return (
     <Select value={favoriteTeam || "none"} onValueChange={handleValueChange}>
       <SelectTrigger
-        className="h-8 w-auto min-w-[70px] border-0 bg-transparent text-white hover:bg-white/10 focus:ring-0 focus:ring-offset-0 gap-1"
+        className="h-8 w-auto min-w-[72px] gap-1 border-0 bg-transparent px-2 text-white/90 hover:bg-white/15 focus:ring-0 focus:ring-offset-0 data-[state=open]:bg-white/15"
         title="Select favorite team"
       >
         <Star
           size={14}
-          className={favoriteTeam ? "fill-yellow-400 text-yellow-400" : ""}
+          className={favoriteTeam ? "fill-yellow-400 text-yellow-400" : "text-white/80"}
         />
         <SelectValue>
           {selectedTeam ? selectedTeam.abbreviation : "FAV"}
         </SelectValue>
+        <ChevronDown size={12} className="opacity-60" />
       </SelectTrigger>
       <SelectContent className="max-h-[300px]">
         <SelectItem value="none">No favorite</SelectItem>
         {teams.map((team) => (
           <SelectItem key={team.id} value={team.id}>
-            {team.abbreviation} - {team.name}
+            {team.abbreviation} · {team.name}
           </SelectItem>
         ))}
       </SelectContent>
