@@ -1,52 +1,99 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Light theme — clean & airy, tuned to match the bold dark identity */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+
+    /* Layered surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 47% 11%;
+    --elevated: 0 0% 100%;
+    --elevated-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Bold NBA primary — a confident, energetic blue */
+    --primary: 222 89% 55%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
+    --primary-foreground-strong: 0 0% 100%;
+
+    /* Live accent — vivid red, tuned for visibility on both themes */
+    --live: 0 84% 58%;
+    --live-foreground: 0 0% 100%;
+    --live-glow: 0 84% 58%;
+
+    --secondary: 210 40% 94%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 214 32% 95%;
+    --muted-foreground: 215 16% 42%;
+    --accent: 210 40% 94%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.75rem;
+
+    /* Standings zones */
+    --playoff: 142 71% 45%;
+    --playoff-foreground: 0 0% 100%;
+    --playin: 35 92% 55%;
+    --playin-foreground: 30 50% 12%;
+
+    --border: 214 32% 89%;
+    --input: 214 32% 89%;
+    --ring: 222 89% 55%;
+    --radius: 0.875rem;
+
+    /* Surfaces with transparency for overlays */
+    --surface-tint: 0 0% 100%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    /* Dark-first: deep navy/charcoal with layered elevation so cards lift off */
+    --background: 224 47% 7%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+
+    /* Raised card surface (subtle lift from background) */
+    --card: 222 44% 11%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    /* Higher elevation for hover / popovers */
+    --elevated: 222 40% 14%;
+    --elevated-foreground: 210 40% 98%;
+    --popover: 222 40% 13%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
+
+    /* Bold NBA primary — brighter blue that pops on dark */
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+    --primary-foreground-strong: 210 40% 98%;
+
+    /* Live accent — luminous red with a warm glow */
+    --live: 0 90% 62%;
+    --live-foreground: 0 0% 100%;
+    --live-glow: 0 90% 62%;
+
+    --secondary: 222 40% 16%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 222 38% 16%;
+    --muted-foreground: 215 20% 62%;
+    --accent: 222 40% 18%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+
+    --playoff: 142 65% 52%;
+    --playoff-foreground: 0 0% 100%;
+    --playin: 38 95% 60%;
+    --playin-foreground: 30 50% 12%;
+
+    --border: 222 34% 18%;
+    --input: 222 34% 18%;
+    --ring: 217 91% 60%;
+
+    --surface-tint: 217 91% 60%;
   }
 
   * {
@@ -69,16 +116,25 @@
     -moz-osx-font-smoothing: grayscale;
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    /* Smooth theme transition */
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   #root {
     background-color: hsl(var(--background));
   }
+
+  /* Tabular figures for scores & stats */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
 }
 
 @layer components {
   .scrollbar-thin::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
+    height: 6px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
@@ -86,11 +142,27 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgb(156 163 175);
-    border-radius: 2px;
+    background: hsl(var(--muted-foreground) / 0.35);
+    border-radius: 9999px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: rgb(107 114 128);
+    background: hsl(var(--muted-foreground) / 0.6);
+  }
+
+  /* Subtle ambient background tint behind the app */
+  .app-ambient {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, hsl(var(--surface-tint) / 0.06), transparent 70%);
+  }
+}
+
+@layer utilities {
+  /* Live card glow ring */
+  .live-glow {
+    box-shadow: 0 0 0 1px hsl(var(--live) / 0.5), 0 0 22px -2px hsl(var(--live-glow) / 0.35);
+  }
+  .text-balance {
+    text-wrap: balance;
   }
 }
