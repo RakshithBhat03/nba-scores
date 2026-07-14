@@ -1,7 +1,7 @@
 import { TeamStanding } from '../../types/game';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useFavoriteTeam } from '@/hooks/useFavoriteTeam';
 
 interface TeamStandingRowProps {
   teamStanding: TeamStanding;
@@ -10,8 +10,8 @@ interface TeamStandingRowProps {
 
 export default function TeamStandingRow({ teamStanding, rank }: TeamStandingRowProps) {
   const { team, stats, note } = teamStanding;
+  const { favoriteTeam } = useFavoriteTeam();
 
-  // Helper function to get stat value by name
   const getStatValue = (statName: string): string => {
     const stat = stats.find(s => s.name === statName);
     return stat?.displayValue || '0';
@@ -22,66 +22,68 @@ export default function TeamStandingRow({ teamStanding, rank }: TeamStandingRowP
   const winPercent = getStatValue('winPercent');
   const gamesBehind = getStatValue('gamesBehind');
 
-  // Determine if this team is in playoff position (top 8)
   const isPlayoffPosition = rank <= 8;
-
-  // Determine if this team is in play-in position (9-10)
   const isPlayInPosition = rank >= 9 && rank <= 10;
+  const isFavorite = favoriteTeam === team.id;
+
+  const zoneClass = isPlayoffPosition
+    ? 'border-l-playoff'
+    : isPlayInPosition
+    ? 'border-l-playin'
+    : 'border-l-transparent';
 
   return (
-    <div className={cn(
-      "flex items-center justify-between px-2 py-2 hover:bg-accent/20 transition-colors duration-200 group",
-      isPlayoffPosition && "bg-green-50/50 dark:bg-green-950/20",
-      isPlayInPosition && "bg-yellow-50/50 dark:bg-yellow-950/20"
-    )}>
-      <div className="flex items-center space-x-3 flex-1 min-w-0">
-        {/* Rank */}
-        <div className={cn(
-          "w-6 text-center text-sm font-semibold",
-          isPlayoffPosition && "text-green-600 dark:text-green-400",
-          isPlayInPosition && "text-yellow-600 dark:text-yellow-400"
-        )}>
+    <div
+      className={cn(
+        'flex items-center justify-between gap-2 border-l-2 px-2.5 py-2 transition-colors duration-200 group hover:bg-accent/40',
+        zoneClass,
+        isFavorite && 'bg-primary/5'
+      )}
+    >
+      <div className="flex min-w-0 flex-1 items-center gap-2.5">
+        {/* Rank chip */}
+        <div
+          className={cn(
+            'grid h-6 w-6 flex-shrink-0 place-items-center rounded-md text-xs font-bold tabular-nums',
+            isPlayoffPosition && 'bg-playoff/15 text-playoff',
+            isPlayInPosition && 'bg-playin/15 text-playin',
+            !isPlayoffPosition && !isPlayInPosition && 'bg-muted text-muted-foreground'
+          )}
+        >
           {rank}
         </div>
 
-        {/* Team Logo & Name */}
-        <div className="flex items-center space-x-2 min-w-0">
-          <Avatar className="h-7 w-7 border border-border flex-shrink-0">
-            <AvatarImage
-              src={team.logo}
-              alt={team.name}
-              className="object-contain p-1"
-            />
-            <AvatarFallback className="text-xs font-bold bg-muted">
-              {team.abbreviation}
-            </AvatarFallback>
+        {/* Team logo & name */}
+        <div className="flex min-w-0 items-center gap-2">
+          <Avatar className="h-7 w-7 flex-shrink-0 border border-border/60 bg-background/60">
+            <AvatarImage src={team.logo} alt={team.name} className="object-contain p-1" />
+            <AvatarFallback className="text-[9px] font-extrabold">{team.abbreviation}</AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <div className="font-semibold text-sm truncate group-hover:text-primary transition-colors duration-200">
-              {team.name}
+            <div className="flex items-center gap-1.5">
+              <span className="truncate text-[13px] font-semibold leading-tight group-hover:text-primary transition-colors">
+                {team.name}
+              </span>
+              {isFavorite && <span className="text-[10px] text-primary">★</span>}
             </div>
             {note && (
-              <Badge
-                variant="outline"
-                className="mt-1 text-xs"
-                style={{
-                  borderColor: `#${note.color}`,
-                  color: `#${note.color}`
-                }}
+              <span
+                className="mt-0.5 inline-block text-[10px] font-medium leading-none"
+                style={{ color: `#${note.color}` }}
               >
                 {note.description}
-              </Badge>
+              </span>
             )}
           </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="flex space-x-4 text-center text-sm">
+      <div className="flex items-center text-center text-sm tabular-nums">
         <div className="w-8 font-semibold">{wins}</div>
         <div className="w-8 font-semibold">{losses}</div>
-        <div className="w-12 font-medium">{winPercent}</div>
-        <div className="w-8 font-medium text-muted-foreground">{gamesBehind}</div>
+        <div className="w-12 font-bold">{winPercent}</div>
+        <div className="w-8 text-xs font-medium text-muted-foreground">{gamesBehind}</div>
       </div>
     </div>
   );

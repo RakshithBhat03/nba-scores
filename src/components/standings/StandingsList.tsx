@@ -4,22 +4,22 @@ import ConferenceStandings from './ConferenceStandings';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { RefreshCw, AlertCircle } from 'lucide-react';
+import { RefreshCw, AlertCircle, Trophy } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
 function StandingsSkeletonRow() {
   return (
-    <div className="flex items-center justify-between px-2 py-2 border-b border-border">
-      <div className="flex items-center space-x-2 flex-1">
-        <Skeleton className="h-6 w-6" />
+    <div className="flex items-center justify-between gap-2 border-l-2 border-l-transparent px-2.5 py-2">
+      <div className="flex items-center gap-2.5 flex-1">
+        <Skeleton className="h-6 w-6 rounded-md" />
         <Skeleton className="h-7 w-7 rounded-full" />
-        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-4 w-24" />
       </div>
-      <div className="flex space-x-6">
-        <Skeleton className="h-4 w-8" />
-        <Skeleton className="h-4 w-8" />
-        <Skeleton className="h-4 w-12" />
-        <Skeleton className="h-4 w-8" />
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-4 w-6" />
+        <Skeleton className="h-4 w-6" />
+        <Skeleton className="h-4 w-10" />
+        <Skeleton className="h-4 w-6" />
       </div>
     </div>
   );
@@ -27,26 +27,39 @@ function StandingsSkeletonRow() {
 
 function StandingsSkeleton() {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <Skeleton className="h-10 w-full rounded-lg" />
-      <div className="bg-card rounded-lg border">
-        <div className="px-2 py-2 border-b border-border">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-4 w-20" />
-            <div className="flex space-x-6">
-              <Skeleton className="h-4 w-8" />
-              <Skeleton className="h-4 w-8" />
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-4 w-8" />
-            </div>
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
+        <div className="flex items-center justify-between border-b border-border bg-muted/40 px-2.5 py-2">
+          <Skeleton className="h-4 w-24" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-6" />
+            <Skeleton className="h-4 w-6" />
+            <Skeleton className="h-4 w-10" />
+            <Skeleton className="h-4 w-6" />
           </div>
         </div>
-        <div className="space-y-0">
+        <div className="divide-y divide-border/50">
           {Array.from({ length: 15 }).map((_, i) => (
             <StandingsSkeletonRow key={i} />
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function Legend() {
+  return (
+    <div className="flex items-center justify-center gap-4 text-[10px] font-medium text-muted-foreground">
+      <span className="flex items-center gap-1.5">
+        <span className="h-2 w-2 rounded-full bg-playoff" />
+        Playoff
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-2 w-2 rounded-full bg-playin" />
+        Play-In
+      </span>
     </div>
   );
 }
@@ -66,15 +79,15 @@ export default function StandingsList() {
 
   if (error) {
     return (
-      <div className="py-8 text-center space-y-4">
-        <div className="flex items-center justify-center text-destructive mb-2">
-          <AlertCircle className="h-6 w-6 mr-2" />
-          <span className="font-semibold">Failed to load standings</span>
+      <div className="py-10 text-center space-y-3">
+        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-destructive/10 text-destructive">
+          <AlertCircle className="h-6 w-6" />
         </div>
+        <span className="block font-semibold">Failed to load standings</span>
         <p className="text-muted-foreground text-sm">
           Check your internet connection or try again later
         </p>
-        <Button onClick={handleRefresh} variant="outline" className="mt-4">
+        <Button onClick={handleRefresh} variant="outline" size="sm" className="mt-2">
           <RefreshCw className="h-4 w-4 mr-2" />
           Try Again
         </Button>
@@ -84,12 +97,14 @@ export default function StandingsList() {
 
   if (!standings || !standings.conferences.length) {
     return (
-      <div className="text-center py-12">
-        <div className="text-6xl mb-4">🏆</div>
-        <h3 className="text-lg font-semibold text-foreground mb-2">
+      <div className="flex flex-col items-center justify-center py-14 text-center">
+        <div className="grid h-16 w-16 place-items-center rounded-2xl bg-muted/60 ring-1 ring-border/60">
+          <Trophy className="h-7 w-7 text-muted-foreground" />
+        </div>
+        <h3 className="mt-4 text-base font-semibold text-foreground">
           No standings available
         </h3>
-        <p className="text-muted-foreground">
+        <p className="mt-1 text-sm text-muted-foreground">
           Standings data is currently unavailable
         </p>
       </div>
@@ -97,19 +112,18 @@ export default function StandingsList() {
   }
 
   return (
-    <div className="space-y-2 w-full">
-      {/* Background refresh indicator */}
+    <div className="space-y-3 w-full">
       {isFetching && standings && (
-        <div className="flex items-center justify-center text-xs text-muted-foreground py-1">
-          <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+        <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-muted-foreground py-1">
+          <RefreshCw className="h-3 w-3 animate-spin" />
           Updating standings...
         </div>
       )}
 
       <Tabs value={selectedConference} onValueChange={setSelectedConference} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="eastern">Eastern Conference</TabsTrigger>
-          <TabsTrigger value="western">Western Conference</TabsTrigger>
+          <TabsTrigger value="eastern" className="text-xs font-semibold">Eastern</TabsTrigger>
+          <TabsTrigger value="western" className="text-xs font-semibold">Western</TabsTrigger>
         </TabsList>
 
         {standings.conferences.map((conference) => (
@@ -118,6 +132,8 @@ export default function StandingsList() {
           </TabsContent>
         ))}
       </Tabs>
+
+      <Legend />
     </div>
   );
 }

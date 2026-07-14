@@ -3,146 +3,151 @@ import { formatGameTime, cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { motion } from 'framer-motion';
 
 interface GameCardProps {
   game: Game;
   onCardClick: (gameId: string) => void;
 }
 
+/** Normalize a team color (hex without #, or "ffffff") to an rgba string. */
+function teamColor(color: string | undefined, alpha: number = 1): string {
+  if (!color) return `hsl(var(--foreground) / ${alpha})`;
+  const hex = color.replace('#', '');
+  if (hex.length !== 6) return `hsl(var(--foreground) / ${alpha})`;
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export default function GameCard({ game, onCardClick }: GameCardProps) {
-  const getStatusDisplay = () => {
-    switch (game.status) {
-      case 'scheduled':
-        return (
-          <Badge variant="scheduled" className="text-xs">
-            {formatGameTime(game.date)}
+  const isLive = game.status === 'in';
+  const isFinal = game.status === 'final';
+  const isScheduled = game.status === 'scheduled';
+
+  const variant = isLive ? 'live' : isFinal ? 'final' : 'game';
+
+  const hasScore = !!game.score;
+  const awayScore = game.score?.away;
+  const homeScore = game.score?.home;
+  const isAwayWinning = hasScore && awayScore !== undefined && homeScore !== undefined && awayScore > homeScore;
+  const isHomeWinning = hasScore && awayScore !== undefined && homeScore !== undefined && homeScore > awayScore;
+
+  const renderStatus = () => {
+    if (isLive) {
+      return (
+        <div className="flex items-center justify-center gap-1.5">
+          <Badge variant="live" className="gap-1">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-live-foreground opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-live-foreground" />
+            </span>
+            LIVE
           </Badge>
-        );
-      case 'in':
-        return (
-          <div className="text-center space-y-1">
-            <Badge variant="live" className="text-xs font-semibold">
-              ● LIVE
-            </Badge>
-            {game.displayClock && game.period && (
-              <div className="text-xs text-muted-foreground">
-                Q{game.period} {game.displayClock}
-              </div>
+          {game.displayClock && game.period && (
+            <span className="tabular-nums text-[11px] font-bold text-live">
+              Q{game.period} · {game.displayClock}
+            </span>
+          )}
+        </div>
+      );
+    }
+    if (isFinal) {
+      const ot = game.period && game.period > 4;
+      return <Badge variant="final">{ot ? 'FINAL/OT' : 'FINAL'}</Badge>;
+    }
+    return (
+      <Badge variant="scheduled">
+        {formatGameTime(game.date)}
+      </Badge>
+    );
+  };
+
+  const renderTeamRow = (team: Game['awayTeam'], isHome: boolean, winning: boolean) => {
+    const score = isHome ? homeScore : awayScore;
+    return (
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Avatar
+            className={cn(
+              'h-9 w-9 flex-shrink-0 border bg-background/60 ring-1 ring-border/50',
+              isLive && 'border-live/40'
             )}
-          </div>
-        );
-      case 'final':
-        return (
-          <Badge variant="final" className="text-xs">
-            FINAL
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="outline" className="text-xs">
-            {String(game.status).toUpperCase()}
-          </Badge>
-        );
-    }
-  };
-
-  const getCardVariant = () => {
-    switch (game.status) {
-      case 'in':
-        return 'game';
-      case 'final':
-        return 'final';
-      default:
-        return 'game';
-    }
-  };
-
-  const getScoreColor = (isWinning: boolean) => {
-    if (!game.score) return 'text-foreground';
-    return isWinning
-      ? 'text-nba-primary-600 dark:text-nba-primary-400 font-bold'
-      : 'text-muted-foreground';
-  };
-
-  const isAwayWinning = game.score && game.score.away > game.score.home;
-  const isHomeWinning = game.score && game.score.home > game.score.away;
-
-  return (
-    <Card
-      variant={getCardVariant()}
-      size="game"
-      onClick={() => onCardClick(game.id)}
-      className="cursor-pointer group"
-    >
-        <div className="space-y-2">
-          {/* Column Headers */}
-          <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-wider">
-            <div className="flex-1">Away</div>
-            <div className="px-4 flex-shrink-0"></div>
-            <div className="flex-1 text-right">Home</div>
-          </div>
-
-          {/* Teams Section */}
-          <div className="flex items-center justify-between">
-            {/* Away Team */}
-            <div className="flex items-center space-x-2 min-w-0 flex-1">
-              <Avatar className="h-8 w-8 border border-border flex-shrink-0 group-hover:border-primary/50 transition-colors duration-200">
-                <AvatarImage
-                  src={game.awayTeam.logo}
-                  alt={game.awayTeam.name}
-                  className="object-contain p-1"
-                />
-                <AvatarFallback className="text-xs font-bold bg-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors duration-200">
-                  {game.awayTeam.abbreviation}
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-xs font-semibold truncate min-w-0 group-hover:text-primary transition-colors duration-200">
-                {game.awayTeam.abbreviation}
+          >
+            <AvatarImage src={team.logo} alt={team.name} className="object-contain p-1" />
+            <AvatarFallback className="text-[10px] font-extrabold">{team.abbreviation}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <div className="truncate text-[13px] font-bold leading-tight">
+              {team.abbreviation}
+            </div>
+            {team.record ? (
+              <div className="text-[10px] font-medium text-muted-foreground tabular-nums">
+                {team.record.wins}-{team.record.losses}
               </div>
-            </div>
-
-            {/* VS or Score */}
-            <div className="text-center px-4 flex-shrink-0">
-              {game.score ? (
-                <div className="flex items-center space-x-2">
-                  <div className={cn("text-sm font-bold", getScoreColor(!!isAwayWinning))}>
-                    {game.score.away}
-                  </div>
-                  <div className="text-xs text-muted-foreground">-</div>
-                  <div className={cn("text-sm font-bold", getScoreColor(!!isHomeWinning))}>
-                    {game.score.home}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-xs font-medium text-muted-foreground">
-                  VS
-                </div>
-              )}
-            </div>
-
-            {/* Home Team */}
-            <div className="flex items-center space-x-2 min-w-0 flex-1 justify-end">
-              <div className="text-xs font-semibold truncate min-w-0 text-right group-hover:text-primary transition-colors duration-200">
-                {game.homeTeam.abbreviation}
-              </div>
-              <Avatar className="h-8 w-8 border border-border flex-shrink-0 group-hover:border-primary/50 transition-colors duration-200">
-                <AvatarImage
-                  src={game.homeTeam.logo}
-                  alt={game.homeTeam.name}
-                  className="object-contain p-1"
-                />
-                <AvatarFallback className="text-xs font-bold bg-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors duration-200">
-                  {game.homeTeam.abbreviation}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-
-          {/* Status */}
-          <div className="text-center">
-            {getStatusDisplay()}
+            ) : null}
           </div>
         </div>
+        {hasScore && score !== undefined ? (
+          <span
+            className={cn(
+              'tabular-nums text-2xl font-extrabold leading-none',
+              winning ? 'text-foreground' : 'text-muted-foreground/70'
+            )}
+          >
+            {score}
+          </span>
+        ) : isScheduled ? (
+          <span className="text-xs font-medium text-muted-foreground/60">vs</span>
+        ) : null}
+      </div>
+    );
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <Card
+        variant={variant}
+        size="game"
+        onClick={() => onCardClick(game.id)}
+        className="group relative cursor-pointer overflow-hidden"
+      >
+        {/* Team-color accent strip */}
+        {!isLive && (
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-0 h-1"
+            style={{
+              background: `linear-gradient(90deg, ${teamColor(game.awayTeam?.color, 0.95)} 0%, ${teamColor(game.awayTeam?.color, 0.5)} 50%, ${teamColor(game.homeTeam?.color, 0.95)} 100%)`,
+            }}
+          />
+        )}
+
+        {/* Status header */}
+        <div className="flex items-center justify-center pt-2.5 pb-1.5">
+          {renderStatus()}
+        </div>
+
+        {/* Teams */}
+        <div className="space-y-1.5 px-3 pb-3 pt-1">
+          {renderTeamRow(game.awayTeam, false, !!isAwayWinning)}
+          <div className="flex items-center gap-3 py-0.5">
+            <div className="h-px flex-1 bg-border/60" />
+            <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/50">
+              {isLive ? 'In Progress' : isFinal ? 'Final' : 'Matchup'}
+            </span>
+            <div className="h-px flex-1 bg-border/60" />
+          </div>
+          {renderTeamRow(game.homeTeam, true, !!isHomeWinning)}
+        </div>
       </Card>
+    </motion.div>
   );
 }

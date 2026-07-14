@@ -15,7 +15,7 @@ export default function ConferenceStandings({ conference }: ConferenceStandingsP
           <img
             src={nbaLogo48}
             alt="NBA Logo"
-            className="w-16 h-16 mb-4 mx-auto"
+            className="w-16 h-16 mb-4 mx-auto opacity-40"
           />
           <h3 className="text-lg font-semibold text-foreground mb-2">
             No standings available
@@ -29,25 +29,25 @@ export default function ConferenceStandings({ conference }: ConferenceStandingsP
   }
 
   return (
-    <Card className="overflow-hidden w-full">
-      {/* Table Header */}
-      <div className="bg-muted/30 px-2 py-2 border-b border-border">
-        <div className="flex items-center justify-between text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          <div className="flex items-center space-x-3 flex-1">
-            <span className="w-6 text-center">#</span>
-            <span>Team</span>
-          </div>
-          <div className="flex space-x-4 text-center">
-            <span className="w-8">W</span>
-            <span className="w-8">L</span>
-            <span className="w-12">PCT</span>
-            <span className="w-8">GB</span>
-          </div>
+    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-card">
+      {/* Table header */}
+      <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/40 px-2.5 py-2">
+        <div className="flex items-center gap-2.5">
+          <span className="grid h-6 w-6 place-items-center text-[10px] font-bold text-muted-foreground">#</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Team
+          </span>
+        </div>
+        <div className="flex items-center text-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          <span className="w-8">W</span>
+          <span className="w-8">L</span>
+          <span className="w-12">PCT</span>
+          <span className="w-8">GB</span>
         </div>
       </div>
 
-      {/* Team Standings */}
-      <div className="divide-y divide-border">
+      {/* Team standings */}
+      <div className="divide-y divide-border/50">
         {conference.standings.map((teamStanding, index) => (
           <TeamStandingRow
             key={teamStanding.team.id}
@@ -56,6 +56,6 @@ export default function ConferenceStandings({ conference }: ConferenceStandingsP
           />
         ))}
       </div>
-    </Card>
+    </div>
   );
 }
