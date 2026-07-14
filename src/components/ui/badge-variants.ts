@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority"
 
 export const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -11,11 +11,11 @@ export const badgeVariants = cva(
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
-        live: "border-transparent bg-nba-live-500 text-white animate-live-pulse",
+        outline: "border-border text-foreground",
+        live: "border-transparent bg-live text-live-foreground",
         final: "border-transparent bg-muted text-muted-foreground",
-        scheduled: "border-transparent bg-nba-primary-100 text-nba-primary-800 dark:bg-nba-primary-900 dark:text-nba-primary-200",
-        record: "border-transparent bg-muted text-muted-foreground text-xs",
+        scheduled: "border-transparent bg-primary/10 text-primary dark:bg-primary/20",
+        record: "border-transparent bg-muted text-muted-foreground text-[10px] font-semibold normal-case tracking-normal",
       },
     },
     defaultVariants: {
