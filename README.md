@@ -1,180 +1,193 @@
 # NBA Scores Chrome Extension
 
-A modern Chrome extension for real-time NBA scores, standings, and game information with dark theme support.
+A modern Chrome extension for real-time NBA scores, detailed box scores, and conference standings — with light/dark theme support and a favorite-team shortcut.
+
+Built as a Manifest V3 extension with React 18, TypeScript, TanStack Query, and Tailwind CSS. Data is sourced from public ESPN endpoints.
+
+> **Popup size:** 540 × 600 px.
+
+---
 
 ## Features
 
-- 🏀 **Live Game Scores** - Real-time NBA game scores with automatic refresh
-- 📊 **Conference Standings** - Eastern and Western conference standings
-- 🌙 **Dark Theme** - Toggle between light and dark themes
-- 📅 **Date Navigation** - Browse games by date with an intuitive carousel
-- 📱 **Responsive Design** - Optimized for Chrome extension popup (400x600px)
-- ⚡ **Real-time Updates** - Live games refresh every 30 seconds
-- 🎨 **Modern UI** - Built with Tailwind CSS and shadcn/ui components
+- 🏀 **Live game scores** — Real-time scoreboard that auto-refreshes every 30 seconds while games are in progress.
+- 📋 **Box-score view** — Click any live game to open a full box score: team statistics, player stats tables, and game leaders. Press the back button to return to the scoreboard.
+- 📊 **Conference standings** — Eastern and Western conference tables with win-loss records, winning percentage, and games-behind (including half-games).
+- ⭐ **Favorite team** — Pin your team; its game is surfaced at the top of the list. Standings use the correct, dynamic season year.
+- 📅 **Date navigation** — A carousel to browse games on past and future dates.
+- 🌍 **Timezone-aware** — Queries the target date and the previous day to capture games that cross the UTC boundary, then filters by your local timezone so the list always matches your "today."
+- ⚡ **Background refresh** — Data is pre-fetched in the background so the popup is fresh the moment you open it.
+- 🌙 **Light/dark theme** — Toggleable, with your preference persisted in `chrome.storage`.
+- 🛡️ **Resilient by design** — Client-side rate limiting (60 req/min) with exponential backoff and retry on HTTP 429, plus Zod runtime validation of every API response.
 
-## Installation
+---
 
-### From Source
+## Install
 
-1. Clone this repository:
+There are two ways to install the extension.
+
+### Option A — Download a release (easiest)
+
+1. Go to the [Releases page](https://github.com/RakshithBhat03/nba-scores/releases) and download **`nba-scores-v1.0.0.zip`** from the latest release.
+2. Unzip it anywhere on your machine, e.g.:
+   ```bash
+   unzip nba-scores-v1.0.0.zip -d nba-scores
+   ```
+3. Open Chrome and go to `chrome://extensions/`.
+4. Enable **Developer mode** (top-right toggle).
+5. Click **Load unpacked** and select the unzipped folder (the one containing `manifest.json`).
+6. Pin the **NBA Scores** icon to your toolbar and click it to open the popup.
+
+### Option B — Build from source
+
+1. Clone the repository:
    ```bash
    git clone https://github.com/RakshithBhat03/nba-scores.git
    cd nba-scores
    ```
-
 2. Install dependencies:
    ```bash
    npm install
    ```
-
-3. Set up environment variables:
+3. Configure environment variables (see [Environment](#environment)):
    ```bash
    cp .env.example .env
-   # Edit .env with your NBA API endpoints
    ```
-
 4. Build the extension:
    ```bash
    npm run build
    ```
-
-5. Load in Chrome:
-   - Open Chrome and go to `chrome://extensions/`
-   - Enable "Developer mode"
-   - Click "Load unpacked"
+5. Load it in Chrome:
+   - Go to `chrome://extensions/`
+   - Enable **Developer mode**
+   - Click **Load unpacked**
    - Select the `dist/` folder
+
+> The extension works on any site and in new-tab contexts.
+
+---
 
 ## Development
 
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- npm (or yarn / pnpm)
 
-### Development Commands
+### Commands
 
 ```bash
-npm run dev          # Development server (port 3000)
-npm run build        # Build for production
-npm run type-check   # TypeScript validation
-npm run lint         # ESLint validation
-npm run preview      # Preview built extension
+npm run dev          # Start the Vite dev server with HMR
+npm run build        # Type-check + production build into dist/
+npm run preview      # Serve the built dist/ locally
+npm run type-check   # TypeScript validation (no emit)
+npm run lint         # ESLint (zero-warning policy)
 ```
 
-### Environment Configuration
+### Environment
 
-Create a `.env` file in the root directory by copying the example:
+The extension reads its data sources from Vite environment variables. Copy the example file and edit if you need different endpoints:
 
 ```bash
 cp .env.example .env
 ```
 
-Then edit `.env` with your NBA API endpoints:
-
 ```env
-# NBA API Configuration
-VITE_API_BASE_URL=https://your-nba-api-endpoint.com
-VITE_CORE_API_BASE_URL=https://your-core-nba-api-endpoint.com
+# ESPN scoreboard / box-score / teams endpoints
+VITE_API_BASE_URL=https://site.api.espn.com/apis/site/v2/sports/basketball/nba
+# ESPN core endpoint used for standings
+VITE_CORE_API_BASE_URL=https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba
 ```
+
+> The defaults point at public ESPN endpoints. Rate limiting is enforced client-side to be respectful of those APIs.
+
+---
 
 ## Architecture
 
-### Tech Stack
+### Tech stack
 
-- **React 18 + TypeScript** - Component framework
-- **TanStack Query v5** - Data fetching and state management
-- **Tailwind CSS + shadcn/ui** - Styling and component library
-- **Vite** - Build tool and development server
-- **Chrome Extension Manifest V3** - Extension framework
+- **React 18 + TypeScript** (strict mode) — UI framework
+- **TanStack Query v5** — server state, caching, and automatic refetch
+- **Tailwind CSS + shadcn/ui** — styling and component library with dark-theme support
+- **Vite** — build tool and dev server
+- **Zod** — runtime validation of API responses
+- **Chrome Extension Manifest V3** — extension framework (popup entry)
 
-### Project Structure
+### Project structure
 
 ```
 src/
-├── components/          # React components
-│   ├── common/         # Shared components
-│   ├── scores/         # Score-related components
-│   ├── standings/      # Standings components
-│   ├── settings/       # Settings components
-│   └── ui/            # Reusable UI components
-├── hooks/             # Custom React hooks
-├── services/          # API services
-├── types/             # TypeScript type definitions
-├── utils/             # Utility functions
-└── data/              # Static data files
+├── components/
+│   ├── common/        # Header, ErrorBoundary, LoadingSpinner
+│   ├── scores/        # ScoresList, GameCard, GamePreview, DateCarousel
+│   ├── standings/     # ConferenceStandings, StandingsList, TeamStandingRow
+│   ├── settings/      # ThemeToggle, FavoriteTeamSelector
+│   └── ui/            # shadcn/ui primitives (Button, Card, Badge, Tabs, etc.)
+├── hooks/             # Data fetching & state (useScores, useStandings, useGamePreview, ...)
+├── services/          # API service + chrome.storage integration
+├── lib/               # utils, validation, rate limiter
+├── schemas/           # Zod schemas for API responses
+├── types/             # TypeScript interfaces (game, standings, settings)
+├── utils/             # logger, standings utilities
+└── data/              # Static NBA team data
 ```
 
-### Data Flow
+### Data flow
 
-1. **Custom Hooks** handle data fetching via TanStack Query
-2. **API Service** provides external API integration
-3. **Type-safe interfaces** define data structures
-4. **Chrome Storage** persists user settings
+1. **Hooks** in `src/hooks/` fetch data via TanStack Query with sensible `staleTime`s (live games: 30s refetch; box score: 30s; standings: 10 min).
+2. **`services/api.ts`** centralizes all HTTP calls and runs them through a rate limiter.
+3. **`lib/rateLimiter.ts`** caps throughput at 60 req/min with exponential backoff and retries on HTTP 429.
+4. **Zod schemas** validate every external response before it reaches the UI.
+5. **`services/storage.ts`** persists theme and favorite-team settings in `chrome.storage` (falling back to `localStorage` outside the extension context).
 
-## Features in Detail
+### Data sources
 
-### Live Scores
+All data comes from public ESPN endpoints:
 
-- Real-time game scores with automatic refresh
-- Game status indicators (scheduled, in progress, final)
-- Team records and logos
-- Venue information
-- 3-column responsive grid layout
+| Purpose | Endpoint base |
+| --- | --- |
+| Scoreboard, box scores, teams | `https://site.api.espn.com/apis/site/v2/sports/basketball/nba` |
+| Standings | `https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba` |
 
-### Standings
+These hosts are declared in `manifest.json` `host_permissions` and the Content Security Policy so the extension can call them cross-origin.
 
-- Eastern and Western conference standings
-- Win-loss records and percentages
-- Games behind calculation
-- Sortable by conference
+---
 
-### Theme System
+## Releases
 
-- Light and dark theme support
-- Persistent theme preference
-- Smooth transitions
-- NBA-branded color palette
+Releases are published on the [GitHub Releases page](https://github.com/RakshithBhat03/nba-scores/releases). Each release ships a ready-to-load `dist/` build packaged as `nba-scores-v<version>.zip`. See [Install → Option A](#option-a--download-a-release-easiest) for how to load it.
 
-## API Integration
+See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
 
-The extension uses external NBA APIs for live data:
-
-- **Scoreboard API** - Game scores and schedules
-- **Standings API** - Conference standings
-- **Teams API** - Team information and logos
-
-The API endpoints and data structures are based on the public ESPN API documentation available at https://github.com/pseudo-r/Public-ESPN-API.
-
-
+---
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
+2. Create a feature branch: `git checkout -b feature/your-feature`
 3. Make your changes and test thoroughly
-4. Run linting and type checking: `npm run lint && npm run type-check`
-5. Commit your changes: `git commit -m 'Add feature'`
-6. Push to the branch: `git push origin feature-name`
-7. Open a pull request
+4. Run lint and type checks: `npm run lint && npm run type-check`
+5. Commit using a clear, conventional message (e.g. `feat:`, `fix:`, `docs:`)
+6. Push to your branch: `git push origin feature/your-feature`
+7. Open a pull request against `main`
+
+### Contributors
+
+- **Rakshith Bhat** — [@RakshithBhat03](https://github.com/RakshithBhat03)
+
+---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ## Disclaimer
 
-**ESPN Disclaimer:**
-This project is an independent, open-source project and is not affiliated with, endorsed, or supported by ESPN in any way.
+**ESPN disclaimer:** This project is an independent, open-source project and is not affiliated with, endorsed by, or supported by ESPN in any way. It uses unofficial ESPN endpoints, which may change, break, or be removed at any time without notice. All ESPN content — including names, logos, trademarks, and data — is the property of ESPN and/or its licensors. This code is provided for educational and personal use only.
 
-The extension uses unofficial ESPN endpoints, which may change, break, or be removed at any time without notice. Use at your own risk.
-
-All ESPN content, including names, logos, trademarks, and data, are the property of ESPN and/or its licensors. This project does not include or distribute any such proprietary materials.
-
-This code is provided for educational and personal use only. Do not use it for commercial purposes, and ensure you comply with ESPN's Terms of Service.
-
-**NBA Disclaimer:**
-This is an unofficial NBA extension. All NBA-related trademarks and logos are property of the National Basketball Association. This extension is not affiliated with or endorsed by the NBA.
+**NBA disclaimer:** This is an unofficial NBA extension. All NBA-related trademarks and logos are the property of the National Basketball Association. This extension is not affiliated with or endorsed by the NBA.
 
 ## Support
 
-If you encounter any issues or have suggestions, please open an issue on the GitHub repository.
+If you encounter any issues or have suggestions, please [open an issue](https://github.com/RakshithBhat03/nba-scores/issues).
