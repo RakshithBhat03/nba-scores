@@ -49,8 +49,21 @@
     "nba",
     "sports",
     "scores",
+    "standings",
+    "box-scores",
     "react"
   ],
-  "author": "",
-  "license": "MIT"
+  "author": "Rakshith Bhat <88523594+RakshithBhat03@users.noreply.github.com>",
+  "contributors": [
+    "Rakshith Bhat <88523594+RakshithBhat03@users.noreply.github.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/RakshithBhat03/nba-scores",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RakshithBhat03/nba-scores.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RakshithBhat03/nba-scores/issues"
+  }
 }
